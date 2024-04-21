@@ -1,0 +1,4 @@
+**/obj
+**/bin
+export/plugins/
+export/manifest.json
