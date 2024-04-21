@@ -44,8 +44,7 @@
   <ItemGroup>
     <ProjectReference Include="Nebula.Missions\Nebula.Missions.csproj" />
     <ProjectReference Include="Nebula.UI\Nebula.UI.csproj" />
-    <Compile Remove="Nebula.Missions\**" />
-    <Compile Remove="Nebula.UI\**" />
+    <Compile Remove="Nebula.*\**" />
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
