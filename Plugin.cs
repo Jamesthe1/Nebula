@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using BepInEx;
 using Nebula.Missions;
+using Nebula.UI;
 using UnityEngine.SceneManagement;
 
 namespace Nebula {
@@ -21,6 +22,7 @@ namespace Nebula {
         private IEnumerator InitAfterFrame (Scene scene) {
             yield return null;  // Wait 1 frame so that the scene can load fully
             NodeSpawner.Init (scene);
+            ButtonSpawner.InitQueue ();
             Logger.LogInfo ($"Initialization complete.");
         }
     }
