@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nebula.Missions {
-    using Object = UnityEngine.Object;
-
+namespace Nebula.Utils {
     /// <summary>
     /// Because there is no access to Linq, this must suffice
     /// </summary>
-    internal static class LinqSubstitute {
+    public static class LinqSubstitute {
         public static int Count<T> (this IEnumerable<T> values) {
             return new List<T> (values).Count;
         }
@@ -20,7 +18,7 @@ namespace Nebula.Missions {
             foreach (T item in values)
                 if (predicate (item))
                     return item;
-            return default (T);
+            return default;
         }
 
         /// <summary>
@@ -47,14 +45,6 @@ namespace Nebula.Missions {
             for (int i = 0; i < klist.Count; i++)
                 dict.Add (klist[i], vlist[i]);
             return dict;
-        }
-
-        /// <summary>
-        /// Like "First", but for Unity object names
-        /// </summary>
-        /// <returns>The first item it can find, otherwise the default</returns>
-        public static T FirstByName<T> (this IEnumerable<Object> values, string name) where T : Object {
-            return values.FirstOf (o => o.name == name) as T;
         }
     }
 }

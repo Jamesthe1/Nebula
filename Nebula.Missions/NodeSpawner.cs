@@ -2,12 +2,14 @@
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
+using Nebula.Utils;
+
 namespace Nebula.Missions {
     /// <summary>
     /// Singleton that spawns nodes in the scene
     /// </summary>
     public class NodeSpawner : MonoBehaviour {
-        private static string type = nameof(NodeSpawner);
+        private const string type = nameof(NodeSpawner);
 
         /// <summary>
         /// A function that must trigger when our scene is fully loaded
@@ -26,8 +28,7 @@ namespace Nebula.Missions {
         }
 
         private static void InitQueue () {
-            GameObject[] roots = SceneManager.GetActiveScene ().GetRootGameObjects ();
-            GameObject galaxyRoot = roots.FirstOf (r => r.name == "#GALAXY_ROOT");
+            GameObject galaxyRoot = GameObjectUtils.GetRootObject ("#GALAXY_ROOT");
             // No need to check if galaxyRoot is missing as we can assure it will be there
             Transform nodeRoot = galaxyRoot.transform.FindChild ("GALAXY_ROTATOR/ROOT_Overworld");
 
