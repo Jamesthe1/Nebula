@@ -2,3 +2,4 @@
 **/bin
 export/plugins/
 export/manifest.json
+.vscode
