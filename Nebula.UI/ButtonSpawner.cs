@@ -23,7 +23,7 @@ namespace Nebula.UI {
 
                 if (datum.motdDatum != null) {
                     UILabel motd = mainRoot.FindChild (datum.motdDatum.motdPath).GetComponent<UILabel> ();
-                    motd.GetComponent<CUIMainMenu> ().AddTooltip (motd, datum.button.gameObject, datum.motdDatum.motd);
+                    mainRoot.GetComponent<CUIMainMenu> ().AddTooltip (motd, datum.button.gameObject, datum.motdDatum.motd);
                 }
             }
 
