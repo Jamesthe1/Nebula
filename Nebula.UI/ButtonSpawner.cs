@@ -18,7 +18,8 @@ namespace Nebula.UI {
                 Transform mainRoot = menuRoot.FindChild (datum.menuPath);
 
                 datum.button.transform.parent = mainRoot.FindChild (datum.buttonsPath);
-                datum.button.name = $"{datum.priority}_{datum.button.name}";
+                string priorityStr = datum.priority.ToString ().PadLeft (3, '0');
+                datum.button.name = $"{priorityStr}_{datum.button.name}";
 
                 if (datum.motdDatum != null) {
                     UILabel motd = mainRoot.FindChild (datum.motdDatum.motdPath).GetComponent<UILabel> ();
