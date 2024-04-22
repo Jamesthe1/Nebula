@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+using Nebula.Utils;
+
 namespace Nebula.Missions {
     public static class NodeFactory {
         public static NamedOverworldNode Create (NodeFactoryDatum nodeDatum) {
