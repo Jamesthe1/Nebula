@@ -2,4 +2,6 @@
 **/bin
 export/plugins/
 export/manifest.json
+export/icon.png
 .vscode
+*.zip

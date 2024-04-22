@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>Nebula</AssemblyName>
-    <Description>Nebula is a library for adding various assets related to House of the Dying Sun.</Description>
+    <Description>Nebula is a collection of utilities for adding various assets related to House of the Dying Sun.</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -52,6 +51,6 @@
   </Target>
   
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
-    <Exec Command="echo {&quot;name&quot;: &quot;$(AssemblyName)&quot;, &quot;description&quot;: &quot;$(Description)&quot;, &quot;version_number&quot;: &quot;$(Version)&quot;, &quot;dependencies&quot;: [], &quot;website_url&quot;: &quot;https://github.com/Jamesthe1/Nebula&quot;} &gt; export\manifest.json" />
+    <Exec Command="robocopy . export icon.png&#xD;&#xA;echo {&quot;name&quot;: &quot;$(AssemblyName)&quot;, &quot;description&quot;: &quot;$(Description)&quot;, &quot;version_number&quot;: &quot;$(Version)&quot;, &quot;dependencies&quot;: [], &quot;website_url&quot;: &quot;https://github.com/Jamesthe1/Nebula&quot;} &gt; export\manifest.json&#xD;&#xA;if %25errorlevel%25 leq 4 exit 0&#xD;&#xA;else exit %25errorlevel%25" />
   </Target>
 </Project>
