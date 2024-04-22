@@ -48,7 +48,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
-    <Exec Command="7z a -tzip MissionLoader.zip .\export\*" />
+    <Exec Command="7z a -tzip $(AssemblyName).zip .\export\*" />
   </Target>
   
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
