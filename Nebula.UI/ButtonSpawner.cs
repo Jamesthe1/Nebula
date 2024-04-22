@@ -13,11 +13,10 @@ namespace Nebula.UI {
             GameObject uiRoot = GameObjectUtils.GetRootObject ("# CUI_2D");
             Transform menuRoot = uiRoot.transform.FindChild ("Camera/ROOT_Menus");
 
-            Debug.Log ($"{type}: Creating {buttonQueue.Count} buttons in queue...");
+            Debug.Log ($"{type}: Resolving {buttonQueue.Count} buttons in queue...");
             foreach (ButtonDatum datum in buttonQueue) {
                 Transform mainRoot = menuRoot.FindChild (datum.menuPath);
 
-                datum.button.transform.parent = mainRoot.FindChild (datum.buttonsPath);
                 string priorityStr = datum.priority.ToString ().PadLeft (3, '0');
                 datum.button.name = $"{priorityStr}_{datum.button.name}";
 

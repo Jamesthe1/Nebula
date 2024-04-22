@@ -13,10 +13,19 @@ Nebula comes pre-packed with an event to detect when a scene is completely ready
 1. Inside this method:
 	1. Add the line `NebulaPlugin.SceneReady -= OnSceneReady`.
 	1. Load your AssetBundle(s) here, if you have any.
-	1. Create one or more `ButtonFactoryDatum`s with the name of your `UIButton`, the text inside it, any functions to trigger on click, the font size, the button size, and any optional detail settings. Then, use `ButtonFactory.Create` or `ButtonFactory.CreateMultiple` to create them.
+	1. Create one or more `ButtonFactoryDatum`s with:
+		- The name of your `UIButton`
+		- The text inside it
+		- Any functions to trigger on click
+		- The font size
+		- The button size
+		- The menu path, relative to "# CUI_2D/Camera" in the scene
+        - The button container path, relative to the menu root
+		- Any optional detail settings
+		
+		Then, use `ButtonFactory.Create` or `ButtonFactory.CreateMultiple` to create them.
 		> This step is only if you want to create the button programmatically. If you wish to have a prefab, you may load it from an AssetBundle.
     1. Create a `ButtonDatum` for every `UIButton` you have with the menu's root path, as well as:
-        - The button container path, relative to the menu root
         - The button's priority in the list (0 is most important, higher numbers are less)
         - Optionally, MOTD information (with a path relative to the menu root)
 		> There is a Select-like helper function since System.Linq does not come packaged with the game. Include `Nebula.Utils` in your script, and use `[your button list].Remap` to iteratively turn the list into button data.

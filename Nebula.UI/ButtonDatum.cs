@@ -15,14 +15,12 @@ namespace Nebula.UI {
     public class ButtonDatum {
         public UIButton button;
         public string menuPath;
-        public string buttonsPath;
         public int priority;
         public MOTDDatum motdDatum;
 
-        public ButtonDatum (UIButton button, string menuPath, string buttonsPath, int priority, MOTDDatum motdDatum = null) {
+        public ButtonDatum (UIButton button, string menuPath, int priority, MOTDDatum motdDatum = null) {
             this.button = button;
             this.menuPath = menuPath;
-            this.buttonsPath = buttonsPath;
             this.priority = priority;
             this.motdDatum = motdDatum;
         }

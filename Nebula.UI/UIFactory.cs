@@ -46,10 +46,11 @@ namespace Nebula.UI {
             return child;
         }
 
-        public static UIButton CreateButton (Vector3 size, string name, string text, List<EventDelegate> onClick, int fontSize,
+        public static UIButton CreateButton (GameObject root, Vector3 size, string name, string text, List<EventDelegate> onClick, int fontSize,
                 Color color, Font ttf = null) {
 
-            GameObject buttonObj = new GameObject ("BUTTON_" + name);
+            GameObject buttonObj = NGUITools.AddChild (root);
+            buttonObj.name = "BUTTON_" + name;
 
             // Needs to exist before the actual button
             BoxCollider box = buttonObj.AddComponent<BoxCollider> ();
