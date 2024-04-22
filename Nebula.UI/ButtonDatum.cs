@@ -19,7 +19,8 @@ namespace Nebula.UI {
         public int priority;
         public MOTDDatum motdDatum;
 
-        public ButtonDatum (string menuPath, string buttonsPath, int priority, MOTDDatum motdDatum = null) {
+        public ButtonDatum (UIButton button, string menuPath, string buttonsPath, int priority, MOTDDatum motdDatum = null) {
+            this.button = button;
             this.menuPath = menuPath;
             this.buttonsPath = buttonsPath;
             this.priority = priority;
