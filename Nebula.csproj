@@ -3,7 +3,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>Nebula</AssemblyName>
     <Description>Nebula is a collection of utilities for adding various assets related to House of the Dying Sun.</Description>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
