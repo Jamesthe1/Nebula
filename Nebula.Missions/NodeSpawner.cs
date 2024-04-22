@@ -11,23 +11,9 @@ namespace Nebula.Missions {
     public class NodeSpawner : MonoBehaviour {
         private const string type = nameof(NodeSpawner);
 
-        /// <summary>
-        /// A function that must trigger when our scene is fully loaded
-        /// </summary>
-        public delegate void SceneReadyDelegate (Scene scene);
-        /// <summary>
-        /// An event that must trigger when our scene is fully loaded
-        /// </summary>
-        public static event SceneReadyDelegate SceneReady;
-
         public static Queue<NamedOverworldNode> nodeQueue = new Queue<NamedOverworldNode> ();
 
-        public static void Init (Scene scene) {
-            SceneReady?.Invoke (scene);
-            InitQueue ();
-        }
-
-        private static void InitQueue () {
+        public static void InitQueue () {
             GameObject galaxyRoot = GameObjectUtils.GetRootObject ("#GALAXY_ROOT");
             // No need to check if galaxyRoot is missing as we can assure it will be there
             Transform nodeRoot = galaxyRoot.transform.FindChild ("GALAXY_ROTATOR/ROOT_Overworld");
