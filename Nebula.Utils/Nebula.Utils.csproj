@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Program Files (x86)\Steam\steamapps\common\DyingSun\BepInEx\plugins\Nebula</OutputPath>
+    <OutputPath>$(GameDir)\BepInEx\plugins\Nebula</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +21,7 @@
   
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\DyingSun\dyingsun_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(GameDir)\dyingsun_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
