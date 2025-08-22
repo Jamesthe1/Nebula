@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nebula.UI", "Nebula.UI\Nebu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nebula.Utils", "Nebula.Utils\Nebula.Utils.csproj", "{9D645AE2-3DA5-4590-A6A7-73B567428298}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nebula.EasyCecil", "Nebula.EasyCecil\Nebula.EasyCecil.csproj", "{4D235624-3F20-41A7-AEC1-7462747E9D01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,12 @@ Global
 		{9D645AE2-3DA5-4590-A6A7-73B567428298}.Export|Any CPU.Build.0 = Debug|Any CPU
 		{9D645AE2-3DA5-4590-A6A7-73B567428298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D645AE2-3DA5-4590-A6A7-73B567428298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Export|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Export|Any CPU.Build.0 = Debug|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D235624-3F20-41A7-AEC1-7462747E9D01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
