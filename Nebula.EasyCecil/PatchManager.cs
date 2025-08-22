@@ -14,10 +14,10 @@ namespace Nebula.EasyCecil {
             this.rslv = new TypeResolver (asm);
         }
         
-        private static MethodDefinition GetCtor (TypeDefinition tdef) {
-            // Decide whether or not to use the static ".cctor" with a boolean variable "isStatic" (member in patch class)
+        private static MethodDefinition GetCtor (TypeDefinition tdef, bool isStatic) {
+            string ctorName = isStatic ? ".cctor" : ".ctor";
             foreach (var method in tdef.Methods) {
-                if (method.Name != ".ctor")
+                if (method.Name != ctorName)
                     continue;
 
                 return method;
@@ -25,9 +25,9 @@ namespace Nebula.EasyCecil {
             throw new ArgumentException ("Type definition provided does not contain any constructor");
         }
         
-        private static Instruction GetCallToBaseCtor (TypeDefinition tdef, MethodDefinition ctor) {
+        private static Instruction GetCallToBaseCtor (TypeDefinition tdef, MethodDefinition ctor, bool isStatic) {
             TypeDefinition tdefBase = tdef.BaseType as TypeDefinition;
-            MethodDefinition baseCtor = GetCtor(tdefBase);
+            MethodDefinition baseCtor = GetCtor (tdefBase, isStatic);
             
             foreach (Instruction ins in ctor.Body.Instructions) {
                 if (ins.OpCode == OpCodes.Call && ins.Operand == baseCtor)
@@ -37,12 +37,15 @@ namespace Nebula.EasyCecil {
         }
         
         public void PatchType (TypeDefinition tdef, List<ITypePatch> patches) {
-            MethodDefinition ctor = GetCtor (tdef);
-            ILProcessor ctor_il = ctor.Body.GetILProcessor ();
-            Instruction baseCall = GetCallToBaseCtor (tdef, ctor);
-            
             foreach (ITypePatch patch in patches) {
-                patch.ApplyPatch (tdef, rslv);
+                patch.ApplyPatch (tdef);
+                if (patch.InitTarget == CtorTarget.None)
+                    continue;
+                
+                bool isStatic = patch.InitTarget == CtorTarget.Cctor;
+                MethodDefinition ctor = GetCtor (tdef, isStatic);
+                ILProcessor ctor_il = ctor.Body.GetILProcessor ();
+                Instruction baseCall = GetCallToBaseCtor (tdef, ctor, isStatic);
                 patch.Initialize (ctor_il, baseCall, rslv);
             }
         }

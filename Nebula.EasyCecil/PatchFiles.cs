@@ -1,11 +1,17 @@
 using System;
-using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Nebula.EasyCecil {
+    public enum CtorTarget {
+        Ctor,
+        Cctor,
+        None
+    }
+    
     public interface ITypePatch {
-        void ApplyPatch (TypeDefinition tdef, TypeResolver rslv);
+        CtorTarget InitTarget { get; }
+        void ApplyPatch (TypeDefinition tdef);
         void Initialize (ILProcessor ctor_il, Instruction successor, TypeResolver rslv);
     }
 
@@ -16,17 +22,7 @@ namespace Nebula.EasyCecil {
             this.asm = asm;
         }
         
-        public TypeReference ResolveType (Type type) {
-            List<TypeDefinition> tdefs = new List<TypeDefinition> (asm.MainModule.Types);
-            TypeDefinition tdef = tdefs.Find (td => td.Name == type.Name);
-            if (tdef != null)
-                return tdef;
-            
-            // If the above failed, this must be a class instance or some other object
-            throw new NotImplementedException ("Cannot resolve type yet beyond primitives");
-        }
-        
-        public void InsertTypeInstruction (ILProcessor ctor_il, Type type, object val, Instruction successor) {
+        public void InsertTypeInstruction (ILProcessor ctor_il, TypeDefinition type, object val, Instruction successor) {
             string typeName = type.Name;
             Instruction ins;
             switch (typeName) {
@@ -54,21 +50,24 @@ namespace Nebula.EasyCecil {
     }
     
     public class FieldInsertion : ITypePatch {
-        readonly Type type;
+        readonly TypeDefinition type;
         readonly string name;
         readonly object val; // Any value-type here will be boxed, so we use `Type` to figure out whether or not this is class data.
         readonly FieldAttributes attr;
+
+        public CtorTarget InitTarget { get; private set; }
         FieldDefinition fld = null;
 
-        public FieldInsertion (Type type, string name, object val, FieldAttributes attr) {
+        public FieldInsertion (TypeDefinition type, string name, object val, FieldAttributes attr, CtorTarget initTarget = CtorTarget.Ctor) {
             this.type = type;
             this.name = name;
             this.val = val;
             this.attr = attr;
+            this.InitTarget = initTarget;
         }
 
-        public void ApplyPatch (TypeDefinition tdef, TypeResolver rslv) {
-            fld = new FieldDefinition (name, attr, rslv.ResolveType (type));
+        public void ApplyPatch (TypeDefinition tdef) {
+            fld = new FieldDefinition (name, attr, type);
             tdef.Fields.Add (fld);
         }
         
