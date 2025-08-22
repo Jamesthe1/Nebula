@@ -8,6 +8,12 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
+    <Optimize>True</Optimize>
+    <OutputPath>$(TargetPath)\export\plugins</OutputPath>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>$(GameDir)\BepInEx\patchers\Nebula</OutputPath>
   </PropertyGroup>
@@ -15,5 +21,4 @@
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.*" />
   </ItemGroup>
-
 </Project>
