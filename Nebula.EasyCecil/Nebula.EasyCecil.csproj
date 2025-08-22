@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>$(GameDir)\BepInEx\plugins\Nebula</OutputPath>
+    <OutputPath>$(GameDir)\BepInEx\patchers\Nebula</OutputPath>
   </PropertyGroup>
   
   <ItemGroup>
