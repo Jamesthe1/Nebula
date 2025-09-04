@@ -19,6 +19,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Mono.Cecil" Version="0.10.*" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.*" PrivateAssets="all" />
   </ItemGroup>
 </Project>
