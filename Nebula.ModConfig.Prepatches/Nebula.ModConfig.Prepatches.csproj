@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net35</TargetFramework>
+    <AssemblyName>Nebula.ModConfig.Prepatches</AssemblyName>
+    <Version>1.0.0</Version>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Export|AnyCPU'">
+    <Optimize>True</Optimize>
+    <OutputPath>$(TargetPath)\export\plugins</OutputPath>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>$(GameDir)\BepInEx\patchers\Nebula</OutputPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.10.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Nebula.EasyCecil\Nebula.EasyCecil.csproj" />
+  </ItemGroup>
+</Project>

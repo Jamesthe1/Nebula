@@ -42,7 +42,7 @@
   
   <ItemGroup>
     <ProjectReference Include="Nebula.Missions\Nebula.Missions.csproj" />
-    <ProjectReference Include="Nebula.UI\Nebula.UI.csproj" />
+    <ProjectReference Include="Nebula.ModConfig\Nebula.ModConfig.csproj" />
     <Compile Remove="Nebula.*\**" />
   </ItemGroup>
   
