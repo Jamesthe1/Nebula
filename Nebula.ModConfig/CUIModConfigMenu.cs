@@ -1,0 +1,216 @@
+using System;
+using System.Collections.Generic;
+using Nebula.ModConfig.EntryTypes;
+using UnityEngine;
+
+namespace Nebula.ModConfig {
+    public class CUIModConfigMenu : CUIMenu {
+        public const int MODCONFIG_SUBSTATE = 0x10000000;
+        /* Menus use a bit to self-identify, this one is available
+         * Can't reference the real name despite putting it in the preloader; this is because these changes need to actually be applied to the DLL that we are referencing
+         * TODO: See if it's possible to generate an object in `obj` with the assembly modified by Nebula.ModConfig.Prepatches
+         * TODO: Implement a MenuStack class that holds active menus in a Stack, replace the substate system
+         */
+
+        public static Dictionary<Type, Type> entryTypes = new Dictionary<Type, Type> {
+            {typeof(bool), typeof(CUIModConfigBoolEntry)},
+            {typeof(int), typeof(CUIModConfigIntEntry)},
+            {typeof(string), typeof(CUIModConfigStringEntry)},
+            {typeof(Enum), typeof(CUIModConfigEnumGenericEntry)}
+        };
+
+        public CUIButtonInput defaultButtonInput;
+
+        public GameObject editApplyButton;
+
+        public AudioClip applyChangesClip;
+
+        public float applyChangesPitch = 1f;
+
+        public float applyChangesVolume = 0.45f;
+
+        public UIScrollView settingsScrollView;
+
+        public float minSpringTargetY;
+
+        public float maxSpringTargetY = 100f;
+
+        private CUIOption _firstOption;
+
+        public CUIButtonInput backButtonInput;
+
+        public UIScrollView scrollView;
+
+        [Header("Main")]
+        public UIPanel mainPanel;
+
+        public List<UITable> optionsTables;
+
+        public GameObject optionsRoot;
+
+        // Underscores auto-hide in inspector, not the fact that they are private
+        private static bool _optionsAreDirty;
+
+        private bool _controlsAreInitialized = true;
+
+        private string _activeGuid;
+
+        public static bool optionsAreDirty {
+            get => _optionsAreDirty;
+            set {
+                if (value != _optionsAreDirty) {
+                    _optionsAreDirty = value;
+                    Messenger<bool>.Broadcast ("OnOptionsAreDirtyChanged", _optionsAreDirty);
+                }
+            }
+        }
+
+        private void Awake () {
+            scrollView.UpdateScrollbars (true);
+        }
+
+        protected override void OnEnable () {
+            editApplyButton.GetComponent<CUIButtonInput>().selectOnDown = backButtonInput;
+            backButtonInput.selectOnUp = editApplyButton.GetComponent<CUIButtonInput>();
+
+            base.OnEnable();
+            List<Transform> list = new List<Transform> ();
+            foreach (UITable optTable in optionsTables) {
+                for (int i = 0; i < optTable.transform.childCount; i++) {
+                    list.Add (optTable.transform.GetChild (i));
+                }
+            }
+
+            list.Sort (UIGrid.SortByName);
+            List<Transform> list2 = new List<Transform> ();
+            for (int j = 0; j < list.Count; j++)
+                if ((bool)list[j].GetComponent<CUIButtonInput> () && list[j].gameObject.activeSelf)
+                    list2.Add (list[j]);
+
+            for (int k = 0; k < list2.Count; k++) {
+                CUIButtonInput component = list2[k].GetComponent<CUIButtonInput> ();
+                if (!component)
+                    continue;
+
+                if (k == 0) {
+                    component.selectOnUp = list2[list2.Count - 1].GetComponent<CUIButtonInput> ();
+                    if (list2.Count > 1)
+                        component.selectOnDown = list2[k + 1].GetComponent<CUIButtonInput> ();
+                    else
+                        component.selectOnDown = component;
+                }
+                else if (k == list2.Count - 1) {
+                    if (list2.Count > 1)
+                        component.selectOnUp = list2[k - 1].GetComponent<CUIButtonInput> ();
+                    else
+                        component.selectOnUp = component;
+
+                    component.selectOnDown = list2[0].GetComponent<CUIButtonInput> ();
+                }
+                else {
+                    component.selectOnDown = list2[k + 1].GetComponent<CUIButtonInput> ();
+                    component.selectOnUp = list2[k - 1].GetComponent<CUIButtonInput> ();
+                }
+
+                BoxCollider component2 = component.GetComponent<BoxCollider> ();
+                if ((bool)component2) {
+                    component2.center = new Vector3 (320f, 0f, 0f);
+                    component2.size = new Vector3 (640f, 20f, 0f);
+                }
+            }
+
+            _firstOption = list2[0].GetComponent<CUIOption> ();
+            buttonTable.ResetChildren ();
+            buttonTable.Reposition ();
+            CUIButtonInput.ProcessVerticalButtonTable (buttonTable.children);
+            Messenger<GameObject>.AddListener ("OnNewNGUISelection", OnNewNGUISelection);
+        }
+
+        protected override void Update () {
+            bool menuCancel = Controls.player.GetButtonDown ("Menu Cancel") || Input.GetKeyDown (KeyCode.Escape);
+            bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
+            if (menuCancel && mouseNotCaptured) {
+                AudioMenu.playCancel = true;
+                if ((bool)UICamera.selectedObject && optionsTables.Find (tbl => UICamera.selectedObject.transform.parent == tbl.transform))
+                    UICamera.selectedObject = defaultButtonInput.gameObject;
+                else
+                    ReturnToLastMenu ();
+            }
+        }
+
+        protected override void OnDisable () {
+            Messenger<GameObject>.RemoveListener ("OnNewNGUISelection", OnNewNGUISelection);
+            base.OnDisable ();
+            optionsAreDirty = false;
+            if (_activeGuid != "") {
+                SetActiveGUIDRootActive (false);
+                _activeGuid = "";
+            }
+        }
+
+        private void SetActiveGUIDRootActive (bool value) {
+            GetGUIDRoot (_activeGuid).gameObject.SetActive (value);
+        }
+
+        public Transform GetGUIDRoot (string guid) {
+            return optionsRoot.transform.Find ("PANEL_ScrollWindow/ROOT_" + guid);
+        }
+
+        private void OnNewNGUISelection (GameObject g) {
+            if ((bool)g && g.transform.parent == optionsRoot.transform && !Controls.menuMouseControl) {
+                Vector3[] worldCorners = settingsScrollView.panel.worldCorners;
+                Vector3 position = (worldCorners[2] + worldCorners[0]) * 0.5f;
+                Transform cachedTransform = settingsScrollView.panel.cachedTransform;
+
+                Vector3 vector = cachedTransform.InverseTransformPoint (g.transform.position);
+                Vector3 vector2 = cachedTransform.InverseTransformPoint (position);
+                Vector3 vector3 = vector - vector2;
+
+                if (!settingsScrollView.canMoveHorizontally)
+                    vector3.x = 0f;
+                if (!settingsScrollView.canMoveVertically)
+                    vector3.y = 0f;
+
+                vector3.z = 0f;
+                Vector3 pos = cachedTransform.localPosition - vector3;
+                pos.y = Mathf.Clamp (pos.y, minSpringTargetY, maxSpringTargetY);
+                SpringPanel springPanel = SpringPanel.Begin (settingsScrollView.panel.cachedGameObject, pos, 8f);
+                springPanel.mThreshold = 0.25f;
+            }
+        }
+
+        public void OnBackButtonClicked () {
+            ReturnToLastMenu ();
+        }
+
+        private void ReturnToLastMenu () {
+            // Configs handle saving on their own, no need to make a call here
+            if (Game.Instance.state == GameState.Operation)
+                Game.Instance.menuSubstate = MenuSubstate.Combat;
+            else
+                Game.Instance.menuSubstate = menuSubstateOnCancel;
+        }
+
+        public void OnMainMenuButtonClicked () {
+            if (Game.Instance.state == GameState.Operation)
+                Game.Instance.menuSubstate = MenuSubstate.Combat;
+            else
+                Game.Instance.menuSubstate = menuSubstateOnCancel;
+        }
+
+        public void OnEditButtonClicked (string guid) {
+            if (_activeGuid != "")
+                SetActiveGUIDRootActive (false);
+            _activeGuid = guid;
+            if (_activeGuid != "")
+                SetActiveGUIDRootActive (true);
+            
+            if (_controlsAreInitialized && global::UI.controlScheme == global::UI.ControlScheme.Controller)
+                UICamera.selectedObject = _firstOption.gameObject;
+        }
+
+        public void OnModConfigButtonClicked () {
+            Game.Instance.menuSubstate = (MenuSubstate)MODCONFIG_SUBSTATE;
+        }
+    }
+}

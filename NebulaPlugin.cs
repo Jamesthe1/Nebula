@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using BepInEx;
 using Nebula.Missions;
+using Nebula.ModConfig;
 using Nebula.UI;
 using UnityEngine.SceneManagement;
 
@@ -25,13 +26,15 @@ namespace Nebula {
 
         private void OnSceneLoaded (Scene scene, LoadSceneMode mode) {
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            StartCoroutine (InitAfterFrame (scene));    // Coroutine requirement explained in function
+            StartCoroutine (InitAfterFrame (scene));    // Coroutine required for the delay to work properly
         }
 
         private IEnumerator InitAfterFrame (Scene scene) {
             yield return null;  // Wait 1 frame so that the scene can load fully
+            ModConfigMenuCreator.CreateConfigMenu ();
             Logger.LogInfo ($"Scene fully loaded. Calling for mods to add to the queues.");
             SceneReady?.Invoke (scene);
+
             NodeSpawner.InitQueue ();
             ButtonSpawner.InitQueue ();
             Logger.LogInfo ($"Initialization complete.");
