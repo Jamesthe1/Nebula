@@ -1,0 +1,60 @@
+using System;
+using BepInEx.Configuration;
+using UnityEngine;
+
+namespace Nebula.ModConfig.EntryTypes {
+    public abstract class CUIModConfigEntry<T> : CUIModConfigEntryBase {
+        protected ConfigEntry<T> dataTyped {
+            get => (ConfigEntry<T>)data;
+            set => data = value;
+        }
+
+        public T value { get; protected set; }
+
+        public void SetReferenceData (ConfigEntry<T> data) {
+            this.data = data;
+        }
+
+        public override Type GetValueType () {
+            return typeof(T);
+        }
+
+        protected override void CacheCurrentValue () {
+            dataTyped.Value = value;
+        }
+
+        protected override void OnEnable () {
+            value = dataTyped.Value;
+            RefreshButton ();
+        }
+
+        protected abstract void AdjustValueForward ();
+        protected abstract void AdjustValueBackward ();
+
+        protected override void OnClick () {
+            if (UICamera.currentTouchID == -2)
+                AdjustValueBackward ();
+            else
+                AdjustValueForward ();
+            RefreshButton ();
+        }
+
+        protected override void OnButtonRight () {
+            AdjustValueForward ();
+            RefreshButton (true);
+        }
+
+        protected override void OnButtonLeft () {
+            AdjustValueBackward ();
+            RefreshButton (true);
+        }
+
+        protected override string GetValueString () {
+            return string.Format ("[{0}]{1}", GetOptionColorMarkup (), value.ToString ());
+        }
+
+        public override string GetConfigString () {
+            return "";
+        }
+    }
+}
