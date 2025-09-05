@@ -11,8 +11,8 @@ namespace Nebula.ModConfig.EntryTypes {
 
         public T value { get; protected set; }
 
-        public void SetReferenceData (ConfigEntry<T> data) {
-            this.data = data;
+        public void SetReferenceData (ConfigEntry<T> dataTyped) {
+            this.dataTyped = dataTyped;
         }
 
         public override Type GetValueType () {
@@ -50,7 +50,7 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         protected virtual string GetValueStringUnformatted () {
-            return value.ToString ().ToUpper ();
+            return dataTyped.ToString ().ToUpper ();
         }
 
         protected override string GetValueString () {
