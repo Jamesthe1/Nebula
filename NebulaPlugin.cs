@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using BepInEx;
 using Nebula.Missions;
 using Nebula.ModConfig;
 using Nebula.UI;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Nebula {
@@ -31,7 +33,12 @@ namespace Nebula {
 
         private IEnumerator InitAfterFrame (Scene scene) {
             yield return null;  // Wait 1 frame so that the scene can load fully
-            ModConfigMenuCreator.CreateConfigMenu ();
+            try {
+                ModConfigMenuCreator.CreateConfigMenu ();
+            }
+            catch (Exception e) {
+                Logger.LogError ($"Caught exception {e.GetType ().FullName}: {e.Message} (source: {e.Source})\n\nStack trace:\n{e.StackTrace}");
+            }
             Logger.LogInfo ($"Scene fully loaded. Calling for mods to add to the queues.");
             SceneReady?.Invoke (scene);
 
