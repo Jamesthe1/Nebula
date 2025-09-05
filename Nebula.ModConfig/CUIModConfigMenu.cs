@@ -185,8 +185,16 @@ namespace Nebula.ModConfig {
             ReturnToLastMenu ();
         }
 
+        private void CacheAllSettings () {
+            foreach (UITable table in optionsTables) {
+                foreach (var button in table.GetComponentsInChildren<CUIOption> ()) {
+                    button.CacheValues ();
+                }
+            }
+        }
+
         private void ReturnToLastMenu () {
-            // Configs handle saving on their own, no need to make a call here
+            CacheAllSettings ();
             Game.Instance.menuSubstate = menuSubstateOnCancel;
         }
 
