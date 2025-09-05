@@ -20,6 +20,7 @@
   
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.*" ExcludeAssets="runtime" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
   </ItemGroup>
   
   <ItemGroup>

@@ -1,11 +1,15 @@
 using System.Collections.Generic;
+using BepInEx.Logging;
 using Mono.Cecil;
 using Nebula.EasyCecil;
 
 public class NebulaPatcher {
+    public static ManualLogSource LogSource { get; } = Logger.CreateLogSource ("Nebula.ModConfig.Prepatches");
+
     public static IEnumerable<string> TargetDLLs { get; } = new[] { "Assembly-CSharp.dll" };
     
     public static void Patch (AssemblyDefinition asm) {
+        LogSource.LogInfo ("Beginning patches...");
         PatchManager patchMgr = new PatchManager (asm);
 
         // This extra is necessary for our mod config
@@ -18,5 +22,6 @@ public class NebulaPatcher {
             CtorTarget.None
         );
         patchMgr.PatchType (menuEnum, new List<ITypePatch> {cfgEntry});
+        LogSource.LogInfo ("End of patches");
     }
 }
