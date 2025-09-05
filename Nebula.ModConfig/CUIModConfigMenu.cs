@@ -53,7 +53,7 @@ namespace Nebula.ModConfig {
 
         private bool _controlsAreInitialized = true;
 
-        private string _activeGuid;
+        private string _activeGuid = "";
 
         public static bool optionsAreDirty {
             get => _optionsAreDirty;
