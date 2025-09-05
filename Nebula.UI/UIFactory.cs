@@ -7,7 +7,7 @@ namespace Nebula.UI {
                 Font ttf = null, UILabel.Effect effect = UILabel.Effect.Shadow) {
 
             UILabel label = NGUITools.AddChild<UILabel> (root);
-            label.name = "LABEL_" + name;
+            label.name = name;
             label.text = text;
             label.effectStyle = effect;
             label.color = color;
@@ -72,7 +72,7 @@ namespace Nebula.UI {
             audioTrigger.clipType = CUIMenuAudioTrigger.AudioClipType.Confirm;
             audioTrigger.trigger = CUIMenuAudioTrigger.Trigger.OnClick;
 
-            buttonObj.CreateLabel ("Button", text, color, fontSize, (int)size.x, ttf);
+            buttonObj.CreateLabel ("LABEL_Button", text, color, fontSize, (int)size.x, ttf);
 
             UITexture bg = buttonObj.CreateTextureBackground (button.hover, (int)size.x, (int)size.y);
             button.tweenTarget = bg.gameObject;
