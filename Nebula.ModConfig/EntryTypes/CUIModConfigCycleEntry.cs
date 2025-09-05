@@ -10,7 +10,8 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         protected void CycleBy (int by) {
-            (GetValueIndex () + by).CanonicalMod (cycle.Count);
+            int pos = (GetValueIndex () + by).CanonicalMod (cycle.Count);
+            value = cycle[pos];
         }
 
         protected override void AdjustValueForward () {
