@@ -99,6 +99,7 @@ namespace Nebula.ModConfig {
 
             Transform titleRoot = NGUITools.AddChild (leftRoot.gameObject).transform;
             titleRoot.name = "000_ROOT_TITLE";
+            titleRoot.localPosition = Vector3.zero;
             titleRoot.gameObject.CopyParentLayer ();
 
             UILabel titleLabel = titleRoot.gameObject.CreateLabel (
@@ -110,15 +111,17 @@ namespace Nebula.ModConfig {
                 StockFonts.serifGothic["Heavy"]
             );
             titleLabel.pivot = UIWidget.Pivot.BottomRight;
-            titleLabel.transform.position = new Vector3 (0, -8, 0);
+            titleLabel.transform.localPosition = new Vector3 (0, -8, 0);
             titleLabel.gameObject.CopyParentLayer ();
 
             UITexture titleBg = NGUITools.AddWidget<UITexture> (titleLabel.gameObject);
             titleBg.width = 400;
             titleBg.height = 2;
-            titleBg.mainTexture = Resources.Load<Texture> ("Resources/ui/ngui/textures/fill_64x");
+            titleBg.mainTexture = Resources.Load<Texture2D> ("ui/ngui/textures/fill_64x");  // Assets/Resources is implied
             titleBg.shader = Shader.Find ("Unlit/Transparent Colored");
             titleBg.name = "000_TEXTURE_HeaderBackground";
+            titleBg.pivot = UIWidget.Pivot.Right;
+
             titleBg.transform.localPosition = new Vector3 (16, 0, 0);
             titleBg.gameObject.CopyParentLayer ();
 
