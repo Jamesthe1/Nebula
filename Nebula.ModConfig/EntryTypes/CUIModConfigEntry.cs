@@ -9,7 +9,15 @@ namespace Nebula.ModConfig.EntryTypes {
             set => data = value;
         }
 
-        public T value { get; protected set; }
+        private T _value;
+
+        public T value {
+            get => _value;
+            protected set {
+                _value = value;
+                dirty = true;
+            }
+        }
 
         public void SetReferenceData (ConfigEntry<T> dataTyped) {
             this.dataTyped = dataTyped;
@@ -21,6 +29,7 @@ namespace Nebula.ModConfig.EntryTypes {
 
         protected override void CacheCurrentValue () {
             dataTyped.Value = value;
+            dirty = false;
         }
 
         protected override void OnEnable () {

@@ -47,21 +47,7 @@ namespace Nebula.ModConfig {
         public GameObject optionsRoot;
 
         // Underscores auto-hide in inspector, not the fact that they are private
-        private static bool _optionsAreDirty;
-
-        private bool _controlsAreInitialized = true;
-
         private string _activeGuid = "";
-
-        public static bool optionsAreDirty {
-            get => _optionsAreDirty;
-            set {
-                if (value != _optionsAreDirty) {
-                    _optionsAreDirty = value;
-                    Messenger<bool>.Broadcast ("OnOptionsAreDirtyChanged", _optionsAreDirty);
-                }
-            }
-        }
 
         private void Awake () {
             scrollView.UpdateScrollbars (true);
@@ -143,7 +129,6 @@ namespace Nebula.ModConfig {
         protected override void OnDisable () {
             Messenger<GameObject>.RemoveListener ("OnNewNGUISelection", OnNewNGUISelection);
             base.OnDisable ();
-            optionsAreDirty = false;
             if (_activeGuid != "") {
                 SetActiveGUIDRootActive (false);
                 _activeGuid = "";
@@ -187,8 +172,9 @@ namespace Nebula.ModConfig {
 
         private void CacheAllSettings () {
             foreach (UITable table in optionsTables) {
-                foreach (var button in table.GetComponentsInChildren<CUIOption> ()) {
-                    button.CacheValues ();
+                foreach (var button in table.GetComponentsInChildren<CUIModConfigEntryBase> ()) {
+                    if (button.dirty)
+                        button.CacheValues ();
                 }
             }
         }
@@ -205,7 +191,7 @@ namespace Nebula.ModConfig {
             if (_activeGuid != "")
                 SetActiveGUIDRootActive (true);
             
-            if (_controlsAreInitialized && global::UI.controlScheme == global::UI.ControlScheme.Controller)
+            if (global::UI.controlScheme == global::UI.ControlScheme.Controller)
                 UICamera.selectedObject = _firstOption.gameObject;
         }
 
