@@ -21,8 +21,6 @@ namespace Nebula.ModConfig {
 
         public CUIButtonInput defaultButtonInput;
 
-        public GameObject editApplyButton;
-
         public AudioClip applyChangesClip;
 
         public float applyChangesPitch = 1f;
@@ -70,8 +68,12 @@ namespace Nebula.ModConfig {
         }
 
         protected override void OnEnable () {
-            editApplyButton.GetComponent<CUIButtonInput>().selectOnDown = backButtonInput;
-            backButtonInput.selectOnUp = editApplyButton.GetComponent<CUIButtonInput>();
+            CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
+            CUIButtonInput prevButton = buttons[buttons.Length - 1];    // Placing last as previous for wrap-around
+            foreach (var button in buttons) {
+                prevButton.selectOnDown = button;
+                button.selectOnUp = prevButton;
+            }
 
             base.OnEnable();
             List<Transform> list = new List<Transform> ();
@@ -185,17 +187,7 @@ namespace Nebula.ModConfig {
 
         private void ReturnToLastMenu () {
             // Configs handle saving on their own, no need to make a call here
-            if (Game.Instance.state == GameState.Operation)
-                Game.Instance.menuSubstate = MenuSubstate.Combat;
-            else
-                Game.Instance.menuSubstate = menuSubstateOnCancel;
-        }
-
-        public void OnMainMenuButtonClicked () {
-            if (Game.Instance.state == GameState.Operation)
-                Game.Instance.menuSubstate = MenuSubstate.Combat;
-            else
-                Game.Instance.menuSubstate = menuSubstateOnCancel;
+            Game.Instance.menuSubstate = menuSubstateOnCancel;
         }
 
         public void OnEditButtonClicked (string guid) {

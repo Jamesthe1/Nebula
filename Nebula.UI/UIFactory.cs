@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nebula.Utils;
 using UnityEngine;
 
 namespace Nebula.UI {
@@ -6,7 +7,7 @@ namespace Nebula.UI {
         public static UILabel CreateLabel (this GameObject root, string name, string text, Color color, int fontSize, int width,
                 Font ttf = null, UILabel.Effect effect = UILabel.Effect.Shadow) {
 
-            UILabel label = NGUITools.AddChild<UILabel> (root);
+            UILabel label = NGUITools.AddWidget<UILabel> (root);
             label.name = name;
             label.text = text;
             label.effectStyle = effect;
@@ -26,7 +27,7 @@ namespace Nebula.UI {
 
         public static UITexture CreateTextureBackground (this GameObject root, Color fromColor, int width, int height) {
             Texture2D texture = Resources.Load<Texture2D> ("ui/ngui/textures/fill_64x");
-            UITexture child = NGUITools.AddChild<UITexture> (root);
+            UITexture child = NGUITools.AddWidget<UITexture> (root);
             child.name = "TEXTURE_Background";
             child.mainTexture = texture;
             child.color = Color.clear;
@@ -51,6 +52,8 @@ namespace Nebula.UI {
 
             GameObject buttonObj = NGUITools.AddChild (root);
             buttonObj.name = name;
+            buttonObj.layer = root.layer;
+            buttonObj.CopyParentLayer ();
 
             // Needs to exist before the actual button
             BoxCollider box = buttonObj.AddComponent<BoxCollider> ();

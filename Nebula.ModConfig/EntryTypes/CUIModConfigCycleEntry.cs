@@ -3,7 +3,7 @@ using Nebula.Utils;
 
 namespace Nebula.ModConfig.EntryTypes {
     public abstract class CUIModConfigCycleEntry<T> : CUIModConfigEntry<T> {
-        public List<T> cycle { protected get; set; }
+        public List<T> cycle { protected get; set; } = new List<T> ();
 
         protected int GetValueIndex () {
             return cycle.IndexOf (value);

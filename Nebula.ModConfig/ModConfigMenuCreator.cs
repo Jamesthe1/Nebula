@@ -14,43 +14,45 @@ namespace Nebula.ModConfig {
             GameObject uiRoot = GameObjectUtils.GetRootObject ("# CUI_2D");
             Camera uiCam = uiRoot.transform.FindChild ("Camera").GetComponent<Camera> ();
             Transform menuRoot = uiCam.transform.FindChild ("ROOT_Menus");
-
-            MenuSubstateGate configGate = new MenuSubstateGate () {
-                activeStateMask = (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE,
-                name = "GATE_ModConfig"
-            };
+            // We cannot instantiate objects by using `new` on components, not in this version anyways
+            MenuSubstateGate configGate = NGUITools.AddChild<MenuSubstateGate> (menuRoot.gameObject);
+            configGate.name = "GATE_ModConfig";
+            configGate.activeStateMask = (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE;
             configGate.transform.SetParent (menuRoot);
 
-            UIAnchor anchor = new UIAnchor () {
-                uiCamera = uiCam,
-                side = UIAnchor.Side.Center,
-                runOnlyOnce = true,
-                relativeOffset = new Vector2 (0, -0.07f),
-                name = "ANCHOR_ModConfig"
-            };
-            anchor.transform.parent = configGate.transform;
+            UIAnchor anchor = NGUITools.AddChild<UIAnchor> (configGate.gameObject);
+            anchor.uiCamera = uiCam;
+            anchor.side = UIAnchor.Side.Center;
+            anchor.runOnlyOnce = true;
+            anchor.relativeOffset = new Vector2 (0, -0.07f);
+            anchor.name = "ANCHOR_ModConfig";
+
             anchor.gameObject.SetActive (false);
+            anchor.gameObject.CopyParentLayer ();
             configGate.gameObjects.Add (anchor.gameObject);
             
-            CUIModConfigMenu cfgMenu = new CUIModConfigMenu () {
-                applyChangesClip = Resources.Load<AudioClip> ("AudioClip/beep_select_04"),
-                applyChangesPitch = 0.3f,
-                applyChangesVolume = 0.58f,
-                minSpringTargetY = 1,
-                maxSpringTargetY = 308,
-                optionsTables = new List<UITable> (),
-                menuSubstateOnCancel = MenuSubstate.Options,
-                name = "ROOT_ModConfig"
-            };
+            CUIModConfigMenu cfgMenu = NGUITools.AddChild<CUIModConfigMenu> (anchor.gameObject);
+            cfgMenu.applyChangesClip = Resources.Load<AudioClip> ("AudioClip/beep_select_04");
+            cfgMenu.applyChangesPitch = 0.3f;
+            cfgMenu.applyChangesVolume = 0.58f;
+            cfgMenu.minSpringTargetY = 1;
+            cfgMenu.maxSpringTargetY = 308;
+            cfgMenu.optionsTables = new List<UITable> ();
+            cfgMenu.menuSubstateOnCancel = MenuSubstate.Options;
+            cfgMenu.name = "ROOT_ModConfig";
+            
             cfgMenu.transform.parent = anchor.transform;
+            cfgMenu.gameObject.CopyParentLayer ();
 
             CreateConfigMenuChildren (cfgMenu);
-            CreateConfigMenuButton (cfgMenu, menuRoot.FindChild ("GATE_OptionsMenu").GetComponent<CUIOptionsMenu> ());
+
+            Transform optionsRoot = menuRoot.FindChild ("GATE_OptionsMenu/ANCHOR_OptionsMenu/ROOT_OptionsMenu");
+            CreateConfigMenuButton (cfgMenu, optionsRoot.GetComponent<CUIOptionsMenu> ());
             // TODO: Add button to options that says "MOD CONFIG"
             // TODO: Create a ConfigMenuOverrideAttribute that takes in a list of ConfigFiles, use this instead of the mod if it posesses it
             // TODO: Create a ConfigEntryLimitsAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a ConfigBounds value (class with Upper + Lower integers)
             // TODO: Create a ConfigEntryCycleAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a list of possible values (boxed)
-            // TODO: Create a CUIModConfigStringCycleEntry (extends from CUIModConfigCycleEntry) that works with StringChoice (extends from string)
+            // TODO: Handle entries with UnityEngine.KeyCode as a keybind that can be assigned in control options
         }
 
         private static void CreateConfigMenuButton (CUIModConfigMenu cfgMenu, CUIOptionsMenu optionsMenu) {
@@ -65,57 +67,60 @@ namespace Nebula.ModConfig {
         }
 
         private static void CreateConfigMenuChildren (CUIModConfigMenu cfgMenu) {
-            UIPanel panel = new UIPanel () {
-                renderQueue = UIPanel.RenderQueue.Automatic,
-                name = "PANEL_ModConfig"
-            };
-            panel.gameObject.AddComponent<Rigidbody> ();
-            TweenAlpha tween = panel.gameObject.AddComponent<TweenAlpha> ();
-            tween.enabled = false;
-            panel.transform.parent = cfgMenu.transform;
+            UIPanel panel = NGUITools.AddChild<UIPanel> (cfgMenu.gameObject);
+            panel.renderQueue = UIPanel.RenderQueue.Automatic;
+            panel.name = "PANEL_ModConfig";
+
+            panel.gameObject.CopyParentLayer ();
             cfgMenu.panel = panel;
             cfgMenu.mainPanel = panel;
 
-            CUISpringScroller menuRoot = new CUISpringScroller () {
-                name = "MENU_ModConfig"
-            };
-            menuRoot.transform.parent = panel.transform;
+            Rigidbody rbody = panel.gameObject.AddComponent<Rigidbody> ();
+            rbody.useGravity = false;
+            rbody.isKinematic = true;
+
+            TweenAlpha tween = panel.gameObject.AddComponent<TweenAlpha> ();
+            tween.enabled = false;
+            tween.from = 0;
+
+            CUISpringScroller menuRoot = NGUITools.AddChild<CUISpringScroller> (panel.gameObject);
+            menuRoot.name = "MENU_ModConfig";
+            menuRoot.gameObject.CopyParentLayer ();
 
             CreateConfigMenuLeftPanel (menuRoot, cfgMenu);
             CreateConfigMenuRightPanel (menuRoot, cfgMenu);
         }
 
         private static void CreateConfigMenuLeftPanel (CUISpringScroller menuRoot, CUIModConfigMenu cfgMenu) {
-            Transform leftRoot = new Transform () {
-                parent = menuRoot.transform,
-                localPosition = new Vector3 (-32, 0, 0),
-                name = "ROOT_Left"
-            };
+            Transform leftRoot = NGUITools.AddChild (menuRoot.gameObject).transform;
+            leftRoot.name = "ROOT_Left";
+            leftRoot.localPosition = new Vector3 (-32, 0, 0);
+            leftRoot.gameObject.CopyParentLayer ();
 
-            Transform titleRoot = new Transform () {
-                parent = leftRoot,
-                name = "000_ROOT_TITLE"
-            };
+            Transform titleRoot = NGUITools.AddChild (leftRoot.gameObject).transform;
+            titleRoot.name = "000_ROOT_TITLE";
+            titleRoot.gameObject.CopyParentLayer ();
 
-            UILabel titleLabel = new UILabel () {
-                trueTypeFont = StockFonts.serifGothic["Heavy"],
-                fontSize = 42,
-                effectStyle = UILabel.Effect.Shadow,
-                aspectRatio = 3.952381f,    // Value copied from the original settings page
-                text = "MOD SETTINGS",
-                name = "LABEL_Title"
-            };
-            titleLabel.transform.parent = titleRoot;
+            UILabel titleLabel = titleRoot.gameObject.CreateLabel (
+                "LABEL_Title",
+                "MOD SETTINGS",
+                Color.white,
+                42,
+                166,
+                StockFonts.serifGothic["Heavy"]
+            );
+            titleLabel.pivot = UIWidget.Pivot.BottomRight;
             titleLabel.transform.position = new Vector3 (0, -8, 0);
+            titleLabel.gameObject.CopyParentLayer ();
 
-            UITexture titleBg = new UITexture () {
-                aspectRatio = 200,
-                mainTexture = Resources.Load<Texture> ("Resources/ui/ngui/textures/fill_64x"),
-                shader = Shader.Find ("Unlit/Transparent Colored"),
-                name = "000_TEXTURE_HeaderBackground"
-            };
-            titleBg.transform.parent = titleLabel.transform;
+            UITexture titleBg = NGUITools.AddWidget<UITexture> (titleLabel.gameObject);
+            titleBg.width = 400;
+            titleBg.height = 2;
+            titleBg.mainTexture = Resources.Load<Texture> ("Resources/ui/ngui/textures/fill_64x");
+            titleBg.shader = Shader.Find ("Unlit/Transparent Colored");
+            titleBg.name = "000_TEXTURE_HeaderBackground";
             titleBg.transform.localPosition = new Vector3 (16, 0, 0);
+            titleBg.gameObject.CopyParentLayer ();
 
             CreateConfigMenuModButtons (leftRoot, cfgMenu);
         }
@@ -123,14 +128,14 @@ namespace Nebula.ModConfig {
         private static void CreateConfigMenuModButtons (Transform leftRoot, CUIModConfigMenu cfgMenu) {
             // TODO: Consider a UIPanel here, may need to make a new value in the ModConfigMenu and apply changes accordingly
 
-            UITable modList = new UITable () {
-                columns = 1,
-                direction = UITable.Direction.Down,
-                sorting = UITable.Sorting.Alphabetic,
-                padding = new Vector2 (0, 3),
-                name = "010_BUTTONS"
-            };
-            modList.transform.parent = leftRoot;
+            UITable modList = NGUITools.AddChild<UITable> (leftRoot.gameObject);
+            modList.columns = 1;
+            modList.direction = UITable.Direction.Down;
+            modList.sorting = UITable.Sorting.Alphabetic;
+            modList.padding = new Vector2 (0, 3);
+            modList.name = "010_BUTTONS";
+
+            modList.gameObject.CopyParentLayer ();
             modList.transform.localPosition = new Vector3 (-256, -24, 0);
             cfgMenu.buttonTable = modList;
 
@@ -149,17 +154,16 @@ namespace Nebula.ModConfig {
                     new List<EventDelegate> (),
                     modList.gameObject
                 );
+                if (i == 1) {
+                    button.GetComponent<CUIButtonInput> ().startsSelected = true;
+                    cfgMenu.defaultButtonInput = button.GetComponent<CUIButtonInput> ();
+                }
 
                 // Avoiding using lambdas as part of the event delegate because we want our relevant information organized into classes, so we create this component instead
                 ModConfigButton cfgButton = button.gameObject.AddComponent<ModConfigButton> ();
                 cfgButton.configMenu = cfgMenu;
                 cfgButton.guid = meta.GUID;
                 button.onClick.Add (new EventDelegate (cfgButton.OnButtonClicked));
-
-                if (i == 1) {
-                    button.GetComponent<CUIButtonInput> ().startsSelected = true;
-                    cfgMenu.defaultButtonInput = button.GetComponent<CUIButtonInput> ();
-                }
 
                 i++;
             }
@@ -184,34 +188,34 @@ namespace Nebula.ModConfig {
                 Color.white
             );
             button.transform.localPosition = new Vector3 (240, 15 - (i * 30), 0);
+            button.GetComponent<CUIButtonInput> ().sendsOnClickOnConfirm = true;
             return button;
         }
 
         private static void CreateConfigMenuRightPanel (CUISpringScroller menuRoot, CUIModConfigMenu cfgMenu) {
-            MouseControlGate mCtrl = new MouseControlGate () {
-                enabled = false,
-                name = "WIDGET_ScrollView"
-            };
-            mCtrl.transform.parent = menuRoot.transform;
+            MouseControlGate mCtrl = NGUITools.AddChild<MouseControlGate> (menuRoot.gameObject);
+            mCtrl.enabled = false;
+            mCtrl.name = "WIDGET_ScrollView";
             mCtrl.transform.localPosition = new Vector3 (32, 30, 0);
+            mCtrl.enabled = false;
+
+            mCtrl.gameObject.CopyParentLayer ();
             cfgMenu.optionsRoot = mCtrl.gameObject;
 
             // TODO: Add UISprite children to UIScrollBar, Background and Foreground
-            UIScrollBar scrollBar = new UIScrollBar () {
-                barSize = 0.5f,
-                name = "SLIDER_Scrollbar"
-            };
-            scrollBar.transform.parent = mCtrl.transform;
+            UIScrollBar scrollBar = NGUITools.AddChild<UIScrollBar> (mCtrl.gameObject);
+            scrollBar.barSize = 0.5f;
+            scrollBar.name = "SLIDER_Scrollbar";
+            scrollBar.gameObject.CopyParentLayer ();
 
             Rigidbody scrollRBody = scrollBar.gameObject.AddComponent<Rigidbody> ();
             scrollRBody.useGravity = false;
             scrollRBody.isKinematic = true;
 
-            UIPanel scrollWindow = new UIPanel () {
-                renderQueue = UIPanel.RenderQueue.Automatic,
-                name = "PANEL_ScrollWindow"
-            };
-            scrollWindow.transform.parent = mCtrl.transform;
+            UIPanel scrollWindow = NGUITools.AddChild<UIPanel> (mCtrl.gameObject);
+            scrollWindow.renderQueue = UIPanel.RenderQueue.Automatic;
+            scrollWindow.name = "PANEL_ScrollWindow";
+            scrollWindow.gameObject.CopyParentLayer ();
             menuRoot.targetRoot = scrollWindow.transform;
 
             UIScrollView scrollView = scrollWindow.gameObject.AddComponent<UIScrollView> ();
@@ -245,13 +249,14 @@ namespace Nebula.ModConfig {
                 if (plugin.Config.Count == 0)
                     continue;
 
-                UITable table = new UITable () {
-                    columns = 1,
-                    sorting = UITable.Sorting.Alphabetic,
-                    direction = UITable.Direction.Down,
-                    name = "ROOT_" + pluginEntry.Key
-                };
-                table.transform.parent = panelRoot.transform;
+                UITable table = NGUITools.AddChild<UITable> (panelRoot.gameObject);
+                table.columns = 1;
+                table.sorting = UITable.Sorting.Alphabetic;
+                table.direction = UITable.Direction.Down;
+                table.name = "ROOT_" + pluginEntry.Key;
+                table.gameObject.CopyParentLayer ();
+                
+                table.gameObject.SetActive (false);
                 cfgMenu.optionsTables.Add (table);
 
                 CreateConfigMenuOptionList (plugin, table.gameObject);
@@ -274,14 +279,21 @@ namespace Nebula.ModConfig {
 
                 foreach (ConfigEntryBase cfgKeyValue in cfgEntry.Value) {
                     Type valueType = cfgKeyValue.BoxedValue.GetType ();
+                    Type compType = valueType;
                     // If valueType is already in entryTypes, this while-loop intentionally will not run
-                    while (valueType != null && !CUIModConfigMenu.entryTypes.ContainsKey (valueType)) {
-                        valueType = valueType.BaseType;
+                    while (compType != null && !CUIModConfigMenu.entryTypes.ContainsKey (compType)) {
+                        compType = compType.BaseType;
                     }
-                    if (valueType == null)  // Could not find any base types
+                    if (compType == null)  // Could not find any base types
                         continue;
 
-                    UIButton button = GenerateModButtonOption (i, cfgKeyValue.Definition.Key, cfgKeyValue, valueType, parent);
+                    UIButton button = GenerateModButtonOption (i, cfgKeyValue.Definition.Key, cfgKeyValue, compType, parent);
+                    if (compType.FullName == typeof(Enum).FullName) {
+                        CUIModConfigEnumGenericEntry enumEntry = button.GetComponent<CUIModConfigEnumGenericEntry> ();
+                        foreach (object enumValue in Enum.GetValues (valueType)) {
+                            enumEntry.PushEntry (enumValue);
+                        }
+                    }
                     if (i == 1)
                         button.GetComponent<CUIButtonInput> ().startsSelected = true;
                     i++;
@@ -297,6 +309,7 @@ namespace Nebula.ModConfig {
                 32,
                 126
             );
+            label.pivot = UIWidget.Pivot.Left;
             label.transform.localPosition = new Vector3 (0, -15 - (i * 30), 0);
             return label;
         }
@@ -313,10 +326,11 @@ namespace Nebula.ModConfig {
             button.transform.localPosition = new Vector3 (0, -15 - (i * 30), 0);
             button.GetComponent<BoxCollider> ().center = new Vector3 (320, 0, 0);
             button.GetComponent<CUIMenuAudioTrigger> ().clipType = CUIMenuAudioTrigger.AudioClipType.ToggleOption;
+            button.transform.FindChild ("LABEL_Button").GetComponent<UILabel> ().pivot = UIWidget.Pivot.Left;
 
             UILabel valueLabel = button.gameObject.CreateLabel (
                 "LABEL_Value",
-                string.Format ("[{0}]{1}", Centauri.ColorToHex(Globals.Instance.uiSettings.menuOptionHighlight), cfgKeyValue.BoxedValue.ToString ()),
+                string.Format ("[{0}]{1}", Centauri.ColorToHex (Globals.Instance.uiSettings.menuOptionHighlight), cfgKeyValue.BoxedValue.ToString ()),
                 Color.white,
                 20,
                 160

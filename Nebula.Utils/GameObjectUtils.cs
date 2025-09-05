@@ -19,5 +19,9 @@ namespace Nebula.Utils {
         public static CUIMenu GetMenu (string path) {
             return GetRootObject ("# CUI_2D").transform.FindChild ($"Camera/ROOT_Menus/{path}").GetComponent<CUIMenu> ();
         }
+
+        public static void CopyParentLayer (this GameObject go) {
+            go.layer = go.transform.parent.gameObject.layer;
+        }
     }
 }
