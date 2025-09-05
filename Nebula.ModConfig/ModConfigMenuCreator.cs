@@ -329,11 +329,14 @@ namespace Nebula.ModConfig {
             button.transform.localPosition = new Vector3 (0, -15 - (i * 30), 0);
             button.GetComponent<BoxCollider> ().center = new Vector3 (320, 0, 0);
             button.GetComponent<CUIMenuAudioTrigger> ().clipType = CUIMenuAudioTrigger.AudioClipType.ToggleOption;
-            button.transform.FindChild ("LABEL_Button").GetComponent<UILabel> ().pivot = UIWidget.Pivot.Left;
+
+            UILabel keyLabel = button.transform.FindChild ("LABEL_Button").GetComponent<UILabel> ();
+            keyLabel.pivot = UIWidget.Pivot.Left;
+            keyLabel.transform.localPosition = new Vector3 (4, 0, 0);
 
             UILabel valueLabel = button.gameObject.CreateLabel (
                 "LABEL_Value",
-                string.Format ("[{0}]{1}", Centauri.ColorToHex (Globals.Instance.uiSettings.menuOptionHighlight), cfgKeyValue.BoxedValue.ToString ()),
+                "",
                 Color.white,
                 20,
                 160
