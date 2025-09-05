@@ -49,8 +49,12 @@ namespace Nebula.ModConfig.EntryTypes {
             RefreshButton (true);
         }
 
+        protected virtual string GetValueStringUnformatted () {
+            return value.ToString ().ToUpper ();
+        }
+
         protected override string GetValueString () {
-            return string.Format ("[{0}]{1}", GetOptionColorMarkup (), value.ToString ());
+            return string.Format ("[{0}]{1}", GetOptionColorMarkup (), GetValueStringUnformatted ());
         }
 
         public override string GetConfigString () {

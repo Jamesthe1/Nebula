@@ -11,5 +11,9 @@ namespace Nebula.ModConfig.EntryTypes {
         protected override void AdjustValueForward () {
             ToggleValue ();
         }
+
+        protected override string GetValueStringUnformatted () {
+            return value ? "ON" : "OFF";
+        }
     }
 }
