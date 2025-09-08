@@ -326,6 +326,11 @@ namespace Nebula.ModConfig {
             keyLabel.pivot = UIWidget.Pivot.Left;
             keyLabel.transform.localPosition = new Vector3 (4, 0, 0);
 
+            UITexture bg = button.transform.FindChild ("TEXTURE_Background").GetComponent<UITexture> ();
+            bg.color = Color.clear;
+            bg.pivot = UIWidget.Pivot.Left;
+            bg.transform.localPosition = Vector3.zero;
+
             UILabel valueLabel = button.gameObject.CreateLabel (
                 "LABEL_Value",
                 "",
@@ -336,6 +341,7 @@ namespace Nebula.ModConfig {
             valueLabel.transform.localPosition = new Vector3 (636, 0, 0);
 
             CUIModConfigEntryBase cfgComp = GenerateModButtonEntry (cfgKeyValue, valueType, button);
+            cfgComp.valueLabel = valueLabel;
 
             return button;
         }
