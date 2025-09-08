@@ -62,52 +62,51 @@ namespace Nebula.ModConfig {
             }
 
             base.OnEnable();
-            List<Transform> list = new List<Transform> ();
             foreach (UITable optTable in optionsTables) {
+                List<Transform> list = new List<Transform> ();
                 for (int i = 0; i < optTable.transform.childCount; i++) {
                     list.Add (optTable.transform.GetChild (i));
                 }
-            }
 
-            list.Sort (UIGrid.SortByName);
-            List<Transform> list2 = new List<Transform> ();
-            for (int j = 0; j < list.Count; j++)
-                if ((bool)list[j].GetComponent<CUIButtonInput> () && list[j].gameObject.activeSelf)
-                    list2.Add (list[j]);
+                list.Sort (UIGrid.SortByName);
+                List<Transform> list2 = new List<Transform> ();
+                for (int j = 0; j < list.Count; j++)
+                    if ((bool)list[j].GetComponent<CUIButtonInput> () && list[j].gameObject.activeSelf)
+                        list2.Add (list[j]);
 
-            for (int k = 0; k < list2.Count; k++) {
-                CUIButtonInput component = list2[k].GetComponent<CUIButtonInput> ();
-                if (!component)
-                    continue;
+                for (int k = 0; k < list2.Count; k++) {
+                    CUIButtonInput component = list2[k].GetComponent<CUIButtonInput> ();
+                    if (!component)
+                        continue;
 
-                if (k == 0) {
-                    component.selectOnUp = list2[list2.Count - 1].GetComponent<CUIButtonInput> ();
-                    if (list2.Count > 1)
+                    if (k == 0) {
+                        component.selectOnUp = list2[list2.Count - 1].GetComponent<CUIButtonInput> ();
+                        if (list2.Count > 1)
+                            component.selectOnDown = list2[k + 1].GetComponent<CUIButtonInput> ();
+                        else
+                            component.selectOnDown = component;
+                    }
+                    else if (k == list2.Count - 1) {
+                        if (list2.Count > 1)
+                            component.selectOnUp = list2[k - 1].GetComponent<CUIButtonInput> ();
+                        else
+                            component.selectOnUp = component;
+
+                        component.selectOnDown = list2[0].GetComponent<CUIButtonInput> ();
+                    }
+                    else {
                         component.selectOnDown = list2[k + 1].GetComponent<CUIButtonInput> ();
-                    else
-                        component.selectOnDown = component;
-                }
-                else if (k == list2.Count - 1) {
-                    if (list2.Count > 1)
                         component.selectOnUp = list2[k - 1].GetComponent<CUIButtonInput> ();
-                    else
-                        component.selectOnUp = component;
+                    }
 
-                    component.selectOnDown = list2[0].GetComponent<CUIButtonInput> ();
-                }
-                else {
-                    component.selectOnDown = list2[k + 1].GetComponent<CUIButtonInput> ();
-                    component.selectOnUp = list2[k - 1].GetComponent<CUIButtonInput> ();
-                }
-
-                BoxCollider component2 = component.GetComponent<BoxCollider> ();
-                if ((bool)component2) {
-                    component2.center = new Vector3 (320f, 0f, 0f);
-                    component2.size = new Vector3 (640f, 20f, 0f);
+                    BoxCollider component2 = component.GetComponent<BoxCollider> ();
+                    if ((bool)component2) {
+                        component2.center = new Vector3 (320f, 0f, 0f);
+                        component2.size = new Vector3 (640f, 20f, 0f);
+                    }
                 }
             }
 
-            _firstOption = list2[0].GetComponent<CUIOption> ();
             buttonTable.ResetChildren ();
             buttonTable.Reposition ();
             CUIButtonInput.ProcessVerticalButtonTable (buttonTable.children);
@@ -136,7 +135,10 @@ namespace Nebula.ModConfig {
         }
 
         private void SetActiveGUIDRootActive (bool value) {
-            GetGUIDRoot (_activeGuid).gameObject.SetActive (value);
+            Transform guidRoot = GetGUIDRoot (_activeGuid);
+            guidRoot.gameObject.SetActive (value);
+            if (value)
+                _firstOption = guidRoot.GetChild (0).GetComponent<CUIOption> ();
         }
 
         public Transform GetGUIDRoot (string guid) {
