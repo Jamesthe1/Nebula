@@ -59,7 +59,7 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         protected virtual string GetValueStringUnformatted () {
-            return dataTyped.ToString ().ToUpper ();
+            return value.ToString ().ToUpper ();
         }
 
         protected override string GetValueString () {

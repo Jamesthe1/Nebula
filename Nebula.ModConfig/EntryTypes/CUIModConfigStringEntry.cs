@@ -2,6 +2,8 @@ using System;
 
 namespace Nebula.ModConfig.EntryTypes {
     public class CUIModConfigStringEntry : CUIModConfigEntry<string> {
+        public const int DISPLAY_LENGTH_MAX = 10;
+
         protected override void AdjustValueBackward () {
             value = (string)dataTyped.DefaultValue;
         }
@@ -10,6 +12,15 @@ namespace Nebula.ModConfig.EntryTypes {
             // TODO: Create message box and implement behavior
             // Pull up a popup to set the text (Steam overlay already has a controller keyboard popup).
             throw new NotImplementedException ("Message box not implemented yet; you will have to edit this config manually");
+        }
+
+        protected override string GetValueStringUnformatted () {
+            string sub = value.Substring (0, DISPLAY_LENGTH_MAX);
+            if (value.Length > DISPLAY_LENGTH_MAX) {
+                sub = sub.Remove (DISPLAY_LENGTH_MAX - 3);
+                sub = sub.PadRight (DISPLAY_LENGTH_MAX, '.');
+            }
+            return sub;
         }
     }
 }
