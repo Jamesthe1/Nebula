@@ -106,6 +106,7 @@ namespace Nebula.UI {
             
             scrollBar.gameObject.CopyParentLayer ();
             scrollBar.onChange.Add (new EventDelegate (scrollView.OnScrollBar));
+            scrollBar.enabled = true;
             scrollView.verticalScrollBar = scrollBar;
             
             UISprite bg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
@@ -118,6 +119,7 @@ namespace Nebula.UI {
             bg.tilingScaleX = 1;
 
             bg.gameObject.CopyParentLayer ();
+            scrollBar.backgroundWidget = bg;
 
             BoxCollider bgCldr = bg.gameObject.AddComponent<BoxCollider> ();
             bgCldr.center = new Vector3 (0, -144, 0);
@@ -132,6 +134,7 @@ namespace Nebula.UI {
             fg.tilingScaleX = 1;
 
             fg.gameObject.CopyParentLayer ();
+            scrollBar.foregroundWidget = fg;
 
             BoxCollider fgCldr = fg.gameObject.AddComponent<BoxCollider> ();
             fgCldr.center = new Vector3 (0, -32, 0);
