@@ -90,5 +90,61 @@ namespace Nebula.UI {
             tooltip.text = text;
             return tooltip;
         }
+
+        public static UIScrollBar CreateVerticalScrollBar (this GameObject root, float barSize, string name, UIScrollView scrollView) {
+            UIPanel scrollBarPanel = NGUITools.AddChild<UIPanel> (root);
+            scrollBarPanel.showInPanelTool = false;
+            scrollBarPanel.renderQueue = UIPanel.RenderQueue.StartAt;
+
+            Rigidbody scrollRBody = scrollBarPanel.gameObject.AddComponent<Rigidbody> ();
+            scrollRBody.useGravity = false;
+            scrollRBody.isKinematic = true;
+
+            UIScrollBar scrollBar = scrollBarPanel.gameObject.AddComponent<UIScrollBar> ();
+            scrollBar.barSize = barSize;
+            scrollBar.name = name;
+            
+            scrollBar.gameObject.CopyParentLayer ();
+            scrollBar.onChange.Add (new EventDelegate (scrollView.OnScrollBar));
+            scrollView.verticalScrollBar = scrollBar;
+            
+            UISprite bg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
+            bg.name = "Background";
+            bg.pivot = UIWidget.Pivot.Top;
+            bg.width = 2;
+            bg.height = 288;
+            bg.depth = -1;
+            bg.color = Color.black;
+            bg.tilingScaleX = 1;
+
+            bg.gameObject.CopyParentLayer ();
+
+            BoxCollider bgCldr = bg.gameObject.AddComponent<BoxCollider> ();
+            bgCldr.center = new Vector3 (0, -144, 0);
+            bgCldr.size = new Vector3 (16, 288, 0);
+            
+            UISprite fg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
+            fg.name = "Foreground";
+            fg.pivot = UIWidget.Pivot.Top;
+            fg.width = 14;
+            fg.height = 288;
+            fg.color = new Color (0.48f, 0.48f, 0.48f);
+            fg.tilingScaleX = 1;
+
+            fg.gameObject.CopyParentLayer ();
+
+            BoxCollider fgCldr = fg.gameObject.AddComponent<BoxCollider> ();
+            fgCldr.center = new Vector3 (0, -32, 0);
+            fgCldr.size = new Vector3 (14, 64, 0);
+
+            UIButton fgBtn = fg.gameObject.AddComponent<UIButton> ();
+            fgBtn.tweenTarget = fg.gameObject;
+            fgBtn.hover = Color.white;
+            fgBtn.pressed = new Color (1, 0.67f, 0);
+            fgBtn.disabledColor = fg.color;
+            fgBtn.duration = 0.05f;
+
+            return scrollBar;
+        }
     }
 }
