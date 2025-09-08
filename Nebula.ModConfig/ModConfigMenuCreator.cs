@@ -219,7 +219,9 @@ namespace Nebula.ModConfig {
 
             cfgMenu.settingsScrollView = scrollView;
             cfgMenu.scrollView = scrollView;
-            mCtrl.gameObject.CreateVerticalScrollBar (0.47f, "SLIDER_Scrollbar", scrollView);
+            
+            UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar (0.47f, "SLIDER_Scrollbar", scrollView);
+            scrollBar.transform.localPosition = new Vector3 (-24, 0, 0);
 
             Rigidbody winRBody = scrollWindow.gameObject.AddComponent<Rigidbody> ();
             winRBody.useGravity = false;
@@ -250,6 +252,7 @@ namespace Nebula.ModConfig {
                 cfgMenu.optionsTables.Add (table);
 
                 CreateConfigMenuOptionList (plugin, table.gameObject);
+                table.enabled = true;
             }
         }
 
