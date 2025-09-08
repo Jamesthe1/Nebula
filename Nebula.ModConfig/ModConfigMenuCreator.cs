@@ -205,16 +205,6 @@ namespace Nebula.ModConfig {
             mCtrl.gameObject.CopyParentLayer ();
             cfgMenu.optionsRoot = mCtrl.gameObject;
 
-            // TODO: Add UISprite children to UIScrollBar, Background and Foreground
-            UIScrollBar scrollBar = NGUITools.AddChild<UIScrollBar> (mCtrl.gameObject);
-            scrollBar.barSize = 0.5f;
-            scrollBar.name = "SLIDER_Scrollbar";
-            scrollBar.gameObject.CopyParentLayer ();
-
-            Rigidbody scrollRBody = scrollBar.gameObject.AddComponent<Rigidbody> ();
-            scrollRBody.useGravity = false;
-            scrollRBody.isKinematic = true;
-
             UIPanel scrollWindow = NGUITools.AddChild<UIPanel> (mCtrl.gameObject);
             scrollWindow.renderQueue = UIPanel.RenderQueue.Automatic;
             scrollWindow.name = "PANEL_ScrollWindow";
@@ -226,13 +216,12 @@ namespace Nebula.ModConfig {
             scrollView.dragEffect = UIScrollView.DragEffect.None;
             scrollView.smoothDragStart = false;
             scrollView.iOSDragEmulation = false;
-            scrollView.verticalScrollBar = scrollBar;
             scrollView.showScrollBars = UIScrollView.ShowCondition.Always;
             scrollView.contentPivot = UIWidget.Pivot.TopLeft;
 
-            scrollBar.onChange.Add (new EventDelegate (scrollView.OnScrollBar));
             cfgMenu.settingsScrollView = scrollView;
             cfgMenu.scrollView = scrollView;
+            mCtrl.gameObject.CreateVerticalScrollBar (0.47f, "SLIDER_Scrollbar", scrollView);
 
             Rigidbody winRBody = scrollWindow.gameObject.AddComponent<Rigidbody> ();
             winRBody.useGravity = false;
