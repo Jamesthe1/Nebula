@@ -15,11 +15,10 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         protected override string GetValueStringUnformatted () {
-            string sub = value.Substring (0, DISPLAY_LENGTH_MAX);
-            if (value.Length > DISPLAY_LENGTH_MAX) {
-                sub = sub.Remove (DISPLAY_LENGTH_MAX - 3);
-                sub = sub.PadRight (DISPLAY_LENGTH_MAX, '.');
-            }
+            if (value.Length <= DISPLAY_LENGTH_MAX)
+                return value;
+            string sub = value.Substring (0, DISPLAY_LENGTH_MAX - 3);
+            sub = sub.PadRight (DISPLAY_LENGTH_MAX, '.');
             return sub;
         }
     }
