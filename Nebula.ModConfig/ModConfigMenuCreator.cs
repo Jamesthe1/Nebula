@@ -48,7 +48,6 @@ namespace Nebula.ModConfig {
 
             Transform optionsRoot = menuRoot.FindChild ("GATE_OptionsMenu/ANCHOR_OptionsMenu/ROOT_OptionsMenu");
             CreateConfigMenuButton (cfgMenu, optionsRoot.GetComponent<CUIOptionsMenu> ());
-            // TODO: Add button to options that says "MOD CONFIG"
             // TODO: Create a ConfigMenuOverrideAttribute that takes in a list of ConfigFiles, use this instead of the mod if it posesses it
             // TODO: Create a ConfigEntryLimitsAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a ConfigBounds value (class with Upper + Lower integers)
             // TODO: Create a ConfigEntryCycleAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a list of possible values (boxed)
@@ -200,7 +199,6 @@ namespace Nebula.ModConfig {
             mCtrl.enabled = false;
             mCtrl.name = "WIDGET_ScrollView";
             mCtrl.transform.localPosition = new Vector3 (32, 30, 0);
-            mCtrl.enabled = false;
 
             mCtrl.gameObject.CopyParentLayer ();
             cfgMenu.optionsRoot = mCtrl.gameObject;
@@ -290,6 +288,8 @@ namespace Nebula.ModConfig {
                         button.GetComponent<CUIButtonInput> ().startsSelected = true;
                     i++;
                 }
+
+                // TODO: Generate spacer (font size 10)
             }
         }
 
