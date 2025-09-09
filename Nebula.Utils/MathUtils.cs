@@ -7,7 +7,7 @@ namespace Nebula.Utils {
         }
 
         public static int CanonicalMod (this int a, int b) {
-            return a - b * a / b;   // No need to floor integers
+            return (int)CanonicalMod ((float)a, b);
         }
     }
 }
