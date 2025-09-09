@@ -68,6 +68,7 @@ namespace Nebula.ModConfig {
         private static void CreateConfigMenuChildren (CUIModConfigMenu cfgMenu) {
             UIPanel panel = NGUITools.AddChild<UIPanel> (cfgMenu.gameObject);
             panel.renderQueue = UIPanel.RenderQueue.Automatic;
+            panel.startingRenderQueue = 3007;
             panel.name = "PANEL_ModConfig";
 
             panel.gameObject.CopyParentLayer ();
@@ -205,6 +206,7 @@ namespace Nebula.ModConfig {
 
             UIPanel scrollWindow = NGUITools.AddChild<UIPanel> (mCtrl.gameObject);
             scrollWindow.renderQueue = UIPanel.RenderQueue.Automatic;
+            scrollWindow.startingRenderQueue = 3007;
             scrollWindow.name = "PANEL_ScrollWindow";
             scrollWindow.gameObject.CopyParentLayer ();
             menuRoot.targetRoot = scrollWindow.transform;
@@ -212,6 +214,7 @@ namespace Nebula.ModConfig {
             UIScrollView scrollView = scrollWindow.gameObject.AddComponent<UIScrollView> ();
             scrollView.movement = UIScrollView.Movement.Vertical;
             scrollView.dragEffect = UIScrollView.DragEffect.None;
+            scrollView.restrictWithinPanel = true;
             scrollView.smoothDragStart = false;
             scrollView.iOSDragEmulation = false;
             scrollView.showScrollBars = UIScrollView.ShowCondition.Always;
@@ -219,9 +222,11 @@ namespace Nebula.ModConfig {
 
             cfgMenu.settingsScrollView = scrollView;
             cfgMenu.scrollView = scrollView;
+            menuRoot.settingsScrollView = scrollView;
             
             UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar (0.47f, "SLIDER_Scrollbar", scrollView);
             scrollBar.transform.localPosition = new Vector3 (-24, 0, 0);
+            mCtrl.gameObjects.Add (scrollBar.gameObject);
 
             Rigidbody winRBody = scrollWindow.gameObject.AddComponent<Rigidbody> ();
             winRBody.useGravity = false;
@@ -292,7 +297,13 @@ namespace Nebula.ModConfig {
                     i++;
                 }
 
-                // TODO: Generate spacer (font size 10)
+                UILabel spacer = parent.CreateLabel (
+                    (i * 10 + 9).ToString ("D3") + "_SPACER_10",
+                    "",
+                    Color.clear,
+                    10,
+                    100
+                );
             }
         }
 
