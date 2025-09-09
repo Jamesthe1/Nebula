@@ -15,9 +15,5 @@ namespace Nebula.ModConfig.EntryTypes {
         public void PushEntry (object enumValue) {
             cycle.Add (enumValue);
         }
-
-        protected override string GetValueStringUnformatted () {
-            return value.ToString ().ToUpper ();
-        }
     }
 }
