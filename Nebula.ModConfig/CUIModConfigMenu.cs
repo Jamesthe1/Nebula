@@ -46,12 +46,8 @@ namespace Nebula.ModConfig {
 
         public GameObject optionsRoot;
 
-        // Underscores auto-hide in inspector, not the fact that they are private
+        // Underscores and the "m" prefix auto-hide in inspector, not the fact that they are private
         private string _activeGuid = "";
-
-        private void Awake () {
-            scrollView.UpdateScrollbars (true);
-        }
 
         protected override void OnEnable () {
             CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
@@ -131,18 +127,21 @@ namespace Nebula.ModConfig {
             if (_activeGuid != "") {
                 SetActiveGUIDRootActive (false);
                 _activeGuid = "";
+                scrollView.UpdateScrollbars (true);
             }
         }
 
         private void SetActiveGUIDRootActive (bool value) {
             Transform guidRoot = GetGUIDRoot (_activeGuid);
             guidRoot.gameObject.SetActive (value);
-            if (value)
+            if (value) {
                 _firstOption = guidRoot.GetChild (0).GetComponent<CUIOption> ();
+                scrollView.UpdateScrollbars (true);
+            }
         }
 
         public Transform GetGUIDRoot (string guid) {
-            return optionsRoot.transform.Find ("PANEL_ScrollWindow/ROOT_" + guid);
+            return scrollView.transform.Find ("ROOT_" + guid);
         }
 
         private void OnNewNGUISelection (GameObject g) {
