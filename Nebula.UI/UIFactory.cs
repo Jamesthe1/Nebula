@@ -102,6 +102,7 @@ namespace Nebula.UI {
 
             UIScrollBar scrollBar = scrollBarPanel.gameObject.AddComponent<UIScrollBar> ();
             scrollBar.barSize = barSize;
+            scrollBar.fillDirection = UIProgressBar.FillDirection.TopToBottom;
             scrollBar.name = name;
             
             scrollBar.gameObject.CopyParentLayer ();
