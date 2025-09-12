@@ -206,6 +206,7 @@ namespace Nebula.ModConfig {
 
             UIPanel scrollWindow = NGUITools.AddChild<UIPanel> (mCtrl.gameObject);
             scrollWindow.baseClipRegion = new Vector4 (320, -144, 640, 288);
+            scrollWindow.clipping = UIDrawCall.Clipping.AlphaClip;
             scrollWindow.renderQueue = UIPanel.RenderQueue.Automatic;
             scrollWindow.startingRenderQueue = 3007;
             scrollWindow.name = "PANEL_ScrollWindow";
