@@ -205,6 +205,7 @@ namespace Nebula.ModConfig {
             cfgMenu.optionsRoot = mCtrl.gameObject;
 
             UIPanel scrollWindow = NGUITools.AddChild<UIPanel> (mCtrl.gameObject);
+            scrollWindow.baseClipRegion = new Vector4 (320, -144, 640, 288);
             scrollWindow.renderQueue = UIPanel.RenderQueue.Automatic;
             scrollWindow.startingRenderQueue = 3007;
             scrollWindow.name = "PANEL_ScrollWindow";
@@ -212,7 +213,6 @@ namespace Nebula.ModConfig {
             menuRoot.targetRoot = scrollWindow.transform;
 
             UIScrollView scrollView = scrollWindow.gameObject.AddComponent<UIScrollView> ();
-            scrollView.movement = UIScrollView.Movement.Vertical;
             scrollView.dragEffect = UIScrollView.DragEffect.None;
             scrollView.restrictWithinPanel = true;
             scrollView.smoothDragStart = false;
@@ -220,11 +220,15 @@ namespace Nebula.ModConfig {
             scrollView.showScrollBars = UIScrollView.ShowCondition.Always;
             scrollView.contentPivot = UIWidget.Pivot.TopLeft;
 
+            // Can't set the private field "scale," so we'll have to use custom movement
+            scrollView.movement = UIScrollView.Movement.Custom;
+            scrollView.customMovement = Vector2.up;
+
             cfgMenu.settingsScrollView = scrollView;
             cfgMenu.scrollView = scrollView;
             menuRoot.settingsScrollView = scrollView;
             
-            UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar (0.47f, "SLIDER_Scrollbar", scrollView);
+            UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar (1f, "SLIDER_Scrollbar", scrollView);
             scrollBar.transform.localPosition = new Vector3 (-24, 0, 0);
             mCtrl.gameObjects.Add (scrollBar.gameObject);
 

@@ -106,6 +106,7 @@ namespace Nebula.ModConfig {
             buttonTable.ResetChildren ();
             buttonTable.Reposition ();
             CUIButtonInput.ProcessVerticalButtonTable (buttonTable.children);
+            SetVerticalScrollbarEnabled (false);
             Messenger<GameObject>.AddListener ("OnNewNGUISelection", OnNewNGUISelection);
         }
 
@@ -127,8 +128,18 @@ namespace Nebula.ModConfig {
             if (_activeGuid != "") {
                 SetActiveGUIDRootActive (false);
                 _activeGuid = "";
-                scrollView.UpdateScrollbars (true);
+
+                UIScrollBar scrollBar = scrollView.verticalScrollBar as UIScrollBar;
+                scrollBar.barSize = 1f;
+                scrollBar.value = 0f;
+
+                SetVerticalScrollbarEnabled (false);
             }
+        }
+
+        public void SetVerticalScrollbarEnabled (bool value) {
+            Collider scrollBarCldr = scrollView.verticalScrollBar.foregroundWidget.gameObject.GetComponent<Collider> ();
+            scrollBarCldr.enabled = value;
         }
 
         private void SetActiveGUIDRootActive (bool value) {
@@ -137,6 +148,7 @@ namespace Nebula.ModConfig {
             if (value) {
                 _firstOption = guidRoot.GetChild (0).GetComponent<CUIOption> ();
                 scrollView.UpdateScrollbars (true);
+                SetVerticalScrollbarEnabled (true);    
             }
         }
 

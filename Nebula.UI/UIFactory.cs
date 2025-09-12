@@ -106,18 +106,20 @@ namespace Nebula.UI {
             scrollBar.name = name;
             
             scrollBar.gameObject.CopyParentLayer ();
-            scrollBar.onChange.Add (new EventDelegate (scrollView.OnScrollBar));
             scrollBar.enabled = true;
             scrollView.verticalScrollBar = scrollBar;
             
             UISprite bg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
-            bg.name = "Background";
             bg.pivot = UIWidget.Pivot.Top;
+            bg.transform.localPosition = Vector3.zero;
+            bg.atlas = Resources.Load<UIAtlas> ("ui/ngui/StarfighterAtlas");
+            bg.spriteName = "fill_64x";
             bg.width = 2;
             bg.height = 288;
             bg.depth = -1;
             bg.color = Color.black;
             bg.tilingScaleX = 1;
+            bg.name = "Background";
 
             bg.gameObject.CopyParentLayer ();
             scrollBar.backgroundWidget = bg;
@@ -125,14 +127,19 @@ namespace Nebula.UI {
             BoxCollider bgCldr = bg.gameObject.AddComponent<BoxCollider> ();
             bgCldr.center = new Vector3 (0, -144, 0);
             bgCldr.size = new Vector3 (16, 288, 0);
+            bgCldr.isTrigger = true;
             
             UISprite fg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
-            fg.name = "Foreground";
             fg.pivot = UIWidget.Pivot.Top;
+            fg.transform.localPosition = Vector3.zero;
+            fg.atlas = bg.atlas;
+            fg.spriteName = "fill_64x";
+            fg.type = UISprite.Type.Sliced;
             fg.width = 14;
             fg.height = 288;
             fg.color = new Color (0.48f, 0.48f, 0.48f);
             fg.tilingScaleX = 1;
+            fg.name = "Foreground";
 
             fg.gameObject.CopyParentLayer ();
             scrollBar.foregroundWidget = fg;
@@ -140,6 +147,7 @@ namespace Nebula.UI {
             BoxCollider fgCldr = fg.gameObject.AddComponent<BoxCollider> ();
             fgCldr.center = new Vector3 (0, -32, 0);
             fgCldr.size = new Vector3 (14, 64, 0);
+            fgCldr.isTrigger = true;
 
             UIButton fgBtn = fg.gameObject.AddComponent<UIButton> ();
             fgBtn.tweenTarget = fg.gameObject;
