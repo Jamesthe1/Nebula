@@ -24,5 +24,10 @@ namespace Nebula.UI {
             {"MedDynamic", LoadFont ("MicrogrammaExtDMed_Dynamic")},
             {"MedStatic", LoadFont ("MicrogrammaExtDMedStatic_CockpitHUD")},
         };
+
+        public static Dictionary<string, Font> blender = new Dictionary<string, Font> {
+            {"Bold", LoadFont ("Blender-Bold")},
+            {"Book", LoadFont ("Blender-Book")},
+        };
     }
 }
