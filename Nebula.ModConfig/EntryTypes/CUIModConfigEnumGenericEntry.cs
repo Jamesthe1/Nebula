@@ -1,3 +1,5 @@
+using System;
+
 namespace Nebula.ModConfig.EntryTypes {
     // Using object because the underlying enum type is unknown to our project
     // We also have to use the boxed values because we cannot cast objects of a different template argument (So ConfigEntry<MyEnum> can't be casted to ConfigEntry<object>)
@@ -12,8 +14,10 @@ namespace Nebula.ModConfig.EntryTypes {
             RefreshButton ();
         }
 
-        public void PushEntry (object enumValue) {
-            cycle.Add (enumValue);
+        public override void SetupFromType (Type type) {
+            foreach (object enumValue in Enum.GetValues (type)) {
+                cycle.Add (enumValue);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using BepInEx.Configuration;
-using UnityEngine;
 
 namespace Nebula.ModConfig.EntryTypes {
     public abstract class CUIModConfigEntry<T> : CUIModConfigEntryBase {
