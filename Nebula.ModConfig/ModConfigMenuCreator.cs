@@ -27,6 +27,7 @@ namespace Nebula.ModConfig {
             anchor.relativeOffset = new Vector2 (0, -0.07f);
             anchor.name = "ANCHOR_ModConfig";
 
+            anchor.transform.position = new Vector3 (0, -76, 0);
             anchor.gameObject.SetActive (false);
             anchor.gameObject.CopyParentLayer ();
             configGate.gameObjects.Add (anchor.gameObject);
@@ -50,7 +51,6 @@ namespace Nebula.ModConfig {
             CreateConfigMenuButton (cfgMenu, optionsRoot.GetComponent<CUIOptionsMenu> ());
             // TODO: Create a ConfigMenuOverrideAttribute that takes in a list of ConfigFiles, use this instead of the mod if it posesses it
             // TODO: Create a ConfigEntryLimitsAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a ConfigBounds value (class with Upper + Lower integers)
-            // TODO: Create a ConfigEntryCycleAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a list of possible values (boxed)
             // TODO: Handle entries with UnityEngine.KeyCode as a keybind that can be assigned in control options
         }
 
@@ -291,12 +291,10 @@ namespace Nebula.ModConfig {
                         continue;
 
                     UIButton button = GenerateModButtonOption (i, cfgKeyValue.Definition.Key, cfgKeyValue, compType, parent);
-                    if (compType.FullName == typeof(Enum).FullName) {
-                        CUIModConfigEnumGenericEntry enumEntry = button.GetComponent<CUIModConfigEnumGenericEntry> ();
-                        foreach (object enumValue in Enum.GetValues (valueType)) {
-                            enumEntry.PushEntry (enumValue);
-                        }
-                    }
+
+                    CUIModConfigEntryBase cfgComp = button.GetComponent<CUIModConfigEntryBase> ();
+                    cfgComp.SetupFromType (valueType);
+                        
                     if (i == 1)
                         button.GetComponent<CUIButtonInput> ().startsSelected = true;
                     i++;
