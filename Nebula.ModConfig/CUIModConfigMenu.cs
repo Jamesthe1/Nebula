@@ -66,6 +66,7 @@ namespace Nebula.ModConfig {
 
         protected override void OnEnable () {
             usingPopup = false;
+            optionsAreDirty = false;
 
             CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
             CUIButtonInput prevButton = buttons[buttons.Length - 1];    // Placing last as previous for wrap-around
@@ -230,6 +231,7 @@ namespace Nebula.ModConfig {
                         button.CacheValues ();
                 }
             }
+            optionsAreDirty = false;
         }
 
         private void ReturnToLastMenu () {
