@@ -33,6 +33,7 @@ namespace Nebula.ModConfig.EntryTypes {
 
         protected override void OnEnable () {
             value = dataTyped.Value;
+            dirty = false;
             RefreshButton ();
         }
 
@@ -44,16 +45,19 @@ namespace Nebula.ModConfig.EntryTypes {
                 AdjustValueBackward ();
             else
                 AdjustValueForward ();
+            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton ();
         }
 
         protected override void OnButtonRight () {
             AdjustValueForward ();
+            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton (true);
         }
 
         protected override void OnButtonLeft () {
             AdjustValueBackward ();
+            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton (true);
         }
 

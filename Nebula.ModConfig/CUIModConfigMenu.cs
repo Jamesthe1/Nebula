@@ -49,7 +49,24 @@ namespace Nebula.ModConfig {
         // Underscores and the "m" prefix auto-hide in inspector, not the fact that they are private
         private string _activeGuid = "";
 
+        private bool usingPopup;
+
+        private static bool _optionsAreDirty;
+        
+        // TODO: Implement a State enum for all menus (Normal, SetKeybind, SetString) and add related functions
+        public static bool optionsAreDirty {
+            get => optionsAreDirty;
+            set {
+                if (value != _optionsAreDirty) {
+                    _optionsAreDirty = value;
+                    Messenger<bool>.Broadcast ("OnOptionsAreDirtyChanged", _optionsAreDirty);
+                }
+            }
+        }
+
         protected override void OnEnable () {
+            usingPopup = false;
+
             CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
             CUIButtonInput prevButton = buttons[buttons.Length - 1];    // Placing last as previous for wrap-around
             foreach (var button in buttons) {
@@ -111,15 +128,35 @@ namespace Nebula.ModConfig {
         }
 
         protected override void Update () {
+            if (usingPopup)
+                return;
+
             bool menuCancel = Controls.player.GetButtonDown ("Menu Cancel") || Input.GetKeyDown (KeyCode.Escape);
             bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
             if (menuCancel && mouseNotCaptured) {
                 AudioMenu.playCancel = true;
                 if ((bool)UICamera.selectedObject && optionsTables.Find (tbl => UICamera.selectedObject.transform.parent == tbl.transform))
                     UICamera.selectedObject = defaultButtonInput.gameObject;
+                else if (optionsAreDirty)
+                    PopupConfirmationMenu ();
                 else
                     ReturnToLastMenu ();
             }
+        }
+
+        private void PopupConfirmationMenu () {
+            usingPopup = true;
+            AudioMenu.playConfirm = true;
+            List<CUIConfirmationMenu.ConfirmationMenuDelegate> list = new List<CUIConfirmationMenu.ConfirmationMenuDelegate> {
+                OnApplyConfigsClicked,
+                OnDiscardConfigsClicked
+            };
+            List<string> list2 = new List<string> {
+                "APPLY",
+                "DISCARD"
+            };
+            string bodyText = "One or more configs have been modified. Apply changes?";
+            CUIConfirmationMenu.Show (list2, list, bodyText, "", 1);    // Note that this changes the menu substate, so this mod menu will go inactive
         }
 
         protected override void OnDisable () {
@@ -180,7 +217,10 @@ namespace Nebula.ModConfig {
         }
 
         public void OnBackButtonClicked () {
-            ReturnToLastMenu ();
+            if (optionsAreDirty)
+                PopupConfirmationMenu ();
+            else
+                ReturnToLastMenu ();
         }
 
         private void CacheAllSettings () {
@@ -193,7 +233,6 @@ namespace Nebula.ModConfig {
         }
 
         private void ReturnToLastMenu () {
-            CacheAllSettings ();
             Game.Instance.menuSubstate = menuSubstateOnCancel;
         }
 
@@ -210,6 +249,15 @@ namespace Nebula.ModConfig {
 
         public void OnModConfigButtonClicked () {
             Game.Instance.menuSubstate = (MenuSubstate)MODCONFIG_SUBSTATE;
+        }
+
+        public void OnApplyConfigsClicked () {
+            CacheAllSettings ();
+            ReturnToLastMenu ();
+        }
+
+        public void OnDiscardConfigsClicked () {
+            ReturnToLastMenu ();    // The value stored will be reset the next time our menu is enabled again
         }
     }
 }
