@@ -55,7 +55,7 @@ namespace Nebula.ModConfig {
         
         // TODO: Implement a State enum for all menus (Normal, SetKeybind, SetString) and add related functions
         public static bool optionsAreDirty {
-            get => optionsAreDirty;
+            get => _optionsAreDirty;
             set {
                 if (value != _optionsAreDirty) {
                     _optionsAreDirty = value;
