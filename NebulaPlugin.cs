@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using BepInEx;
 using Nebula.Missions;
 using Nebula.ModConfig;
@@ -21,8 +22,8 @@ namespace Nebula {
         public static event SceneReadyDelegate SceneReady;
 
         private void Awake () {
-            Logger.LogInfo ($"Hello world!");
-            Logger.LogInfo ($"Welcome to a nebula of possible log spam. Hang tight!");
+            Logger.LogInfo ("Hello world!");
+            Logger.LogInfo ("Welcome to a nebula of possible log spam. Hang tight!");
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
@@ -37,14 +38,14 @@ namespace Nebula {
                 ModConfigMenuCreator.CreateConfigMenu ();
             }
             catch (Exception e) {
-                Logger.LogError ($"Caught exception {e.GetType ().FullName}: {e.Message} (source: {e.Source})\n\nStack trace:\n{e.StackTrace}");
+                Logger.LogError ($"Caught {e.GetType ().FullName} while creating config menu: {e.Message} (source: {e.Source})\n\nStack trace:\n{e.StackTrace}");
             }
-            Logger.LogInfo ($"Scene fully loaded. Calling for mods to add to the queues.");
+            Logger.LogInfo ("Scene fully loaded. Calling for mods to add to the queues.");
             SceneReady?.Invoke (scene);
 
             NodeSpawner.InitQueue ();
             ButtonSpawner.InitQueue ();
-            Logger.LogInfo ($"Initialization complete.");
+            Logger.LogInfo ("Initialization complete.");
         }
     }
 }
