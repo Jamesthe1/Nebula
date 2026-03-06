@@ -13,6 +13,14 @@ namespace Nebula.ModConfig.EntryTypes {
             this.data = data;
         }
 
+        public string GetDataKey () {
+            return data.Definition.Key;
+        }
+
+        public string GetDataSection () {
+            return data.Definition.Section;
+        }
+
         public abstract Type GetValueType ();
 
         public virtual void SetupFromType (Type type) {

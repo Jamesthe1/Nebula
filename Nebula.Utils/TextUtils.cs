@@ -6,8 +6,11 @@ namespace Nebula.Utils {
             return Regex.Replace (pascal, "[a-z][A-Z]", m => m.Value[0] + " " + m.Value[1]);
         }
 
-        public static string PascalNameToTitle (this string pascal) {
-            return pascal.SpacePascalCase ().ToUpper ().Replace (".", " // ");
+        public static string PascalNameToTitle (this string pascal, bool uppercase = true) {
+            string title = pascal.SpacePascalCase ().Replace (".", " // ");
+            if (uppercase)
+                title = title.ToUpper ();
+            return title;
         }
     }
 }
