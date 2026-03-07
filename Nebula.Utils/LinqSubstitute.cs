@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace Nebula.Utils {
     /// <summary>
-    /// Because there is no access to Linq, this must suffice
+    /// It was previously thought that there was no access to Linq, due to no DLL present. However, this dotnet version has not yet divided System.Linq from the core library. Therefore, this class is deprecated.
     /// </summary>
+    [Obsolete("Linq is present in this version of dotnet without an external assembly. Therefore, this class and its extension methods should no longer be used.")]
     public static class LinqSubstitute {
         public static int Count<T> (this IEnumerable<T> values) {
             return new List<T> (values).Count;

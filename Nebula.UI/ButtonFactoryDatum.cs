@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nebula.UI {
+    [Obsolete("Use UIFactory.CreateButton")]
     public class ButtonDetailDatum {
         public Color color;
         public Font font;
@@ -12,6 +14,7 @@ namespace Nebula.UI {
         }
     }
     
+    [Obsolete("Use UIFactory.CreateButton")]
     public class ButtonFactoryDatum {
         public string name;
         public string text;

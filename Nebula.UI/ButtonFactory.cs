@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Nebula.Utils;
 using UnityEngine;
 
 namespace Nebula.UI {
+    [Obsolete("Use UIFactory.CreateButton")]
     public static class ButtonFactory {
         public static UIButton Create (ButtonFactoryDatum datum) {
             GameObject root = GameObjectUtils.GetMenu ($"{datum.menuPath}").transform.FindChild (datum.buttonsPath).gameObject;
