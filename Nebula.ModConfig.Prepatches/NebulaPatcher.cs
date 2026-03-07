@@ -12,16 +12,11 @@ public class NebulaPatcher {
         LogSource.LogInfo ("Beginning patches...");
         PatchManager patchMgr = new PatchManager (asm);
 
-        // This extra is necessary for our mod config
-        TypeDefinition menuEnum = asm.MainModule.GetType ("MenuSubstate");
-        FieldInsertion cfgEntry = new FieldInsertion (
-            menuEnum,
-            "ModConfig",
-            0x10000000,
-            FieldAttributes.Static | FieldAttributes.Literal | FieldAttributes.Public | FieldAttributes.HasDefault,
-            CtorTarget.None
-        );
-        patchMgr.PatchType (menuEnum, new List<ITypePatch> {cfgEntry});
+        // Helps our mod config not crash by adding enum entries
+        PatchHelpers.InsertIntoEnum(patchMgr, asm.MainModule, "MenuSubstate", new Dictionary<string, int> {
+            { "ModConfig",      0x10000000 },
+            { "ConfigToast",    0x20000000 }
+        });
         LogSource.LogInfo ("End of patches");
     }
 }
