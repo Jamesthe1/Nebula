@@ -48,10 +48,11 @@ namespace Nebula.ModConfig {
             cfgMenu.gameObject.CopyParentLayer ();
 
             CreateConfigMenuChildren (cfgMenu);
-            ModConfigToastCreator.CreateToasts (menuRoot, uiCam);
 
             Transform optionsRoot = menuRoot.FindChild ("GATE_OptionsMenu/ANCHOR_OptionsMenu/ROOT_OptionsMenu");
             CreateConfigMenuButton (cfgMenu, optionsRoot.GetComponent<CUIOptionsMenu> ());
+            
+            ModConfigToastCreator.CreateToasts (menuRoot, uiCam);
             // TODO: Create a ConfigMenuOverrideAttribute that takes in a list of ConfigFiles, use this instead of the mod if it posesses it
             // TODO: Create a ConfigEntryLimitsAttribute that takes in a dictionary of ConfigMeta keys (class with ConfigFile, Section, Key), and a ConfigBounds value (class with Upper + Lower integers)
             // TODO: Handle entries with UnityEngine.KeyCode as a keybind that can be assigned in control options
