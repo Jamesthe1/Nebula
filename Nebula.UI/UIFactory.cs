@@ -3,6 +3,7 @@ using Nebula.Utils;
 using UnityEngine;
 
 namespace Nebula.UI {
+    // TODO: Replace most arguments with a settings class, some with default values. Maybe a constructor for required items?
     public static class UIFactory {
         public static UILabel CreateLabel (this GameObject root, string name, string text, Color color, int fontSize, int width,
                 Font ttf = null, UILabel.Effect effect = UILabel.Effect.Shadow) {
@@ -157,6 +158,38 @@ namespace Nebula.UI {
             fgBtn.duration = 0.05f;
 
             return scrollBar;
+        }
+
+        public static UIInput CreateInput (this GameObject root, string name, Color color, int fontSize, int width, int lineCount,
+                Font ttf = null, UIInput.KeyboardType kbType = UIInput.KeyboardType.Default) {
+            UILabel label = root.CreateLabel (
+                name,
+                "",
+                color,
+                fontSize,
+                width,
+                ttf ?? StockFonts.blender["Bold"],
+                UILabel.Effect.None
+            );
+            label.height = fontSize * lineCount;
+            label.maxLineCount = lineCount;
+
+            BoxCollider box = label.gameObject.AddComponent<BoxCollider> ();
+            box.isTrigger = true;
+            box.size = new Vector3 (label.width, label.height, 0);
+
+            CUIButtonInput buttonInput = label.gameObject.AddComponent<CUIButtonInput> ();
+            buttonInput.inputType = CUIButtonInput.InputType.Menu;
+            buttonInput.sendsOnClickOnConfirm = true;
+
+            CUIMenuAudioTrigger audioTrigger = label.gameObject.AddComponent<CUIMenuAudioTrigger> ();
+            audioTrigger.clipType = CUIMenuAudioTrigger.AudioClipType.ToggleOption;
+            audioTrigger.trigger = CUIMenuAudioTrigger.Trigger.OnClick;
+
+            UIInput input = label.gameObject.AddComponent<UIInput> ();
+            input.keyboardType = kbType;
+            input.label = label;
+            return input;
         }
     }
 }

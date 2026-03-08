@@ -4,6 +4,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using Nebula.ModConfig.EntryTypes;
+using Nebula.ModConfig.Toasts;
 using Nebula.UI;
 using Nebula.Utils;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Nebula.ModConfig {
             GameObject uiRoot = GameObjectUtils.GetRootObject ("# CUI_2D");
             Camera uiCam = uiRoot.transform.FindChild ("Camera").GetComponent<Camera> ();
             Transform menuRoot = uiCam.transform.FindChild ("ROOT_Menus");
+
             // We cannot instantiate objects by using `new` on components, not in this version anyways
             MenuSubstateGate configGate = NGUITools.AddChild<MenuSubstateGate> (menuRoot.gameObject);
             configGate.name = "GATE_ModConfig";
@@ -46,6 +48,7 @@ namespace Nebula.ModConfig {
             cfgMenu.gameObject.CopyParentLayer ();
 
             CreateConfigMenuChildren (cfgMenu);
+            ModConfigToastCreator.CreateToasts (menuRoot, uiCam);
 
             Transform optionsRoot = menuRoot.FindChild ("GATE_OptionsMenu/ANCHOR_OptionsMenu/ROOT_OptionsMenu");
             CreateConfigMenuButton (cfgMenu, optionsRoot.GetComponent<CUIOptionsMenu> ());

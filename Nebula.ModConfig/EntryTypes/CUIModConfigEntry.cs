@@ -12,7 +12,7 @@ namespace Nebula.ModConfig.EntryTypes {
 
         public T value {
             get => _value;
-            protected set {
+            set {
                 _value = value;
                 dirty = true;
             }

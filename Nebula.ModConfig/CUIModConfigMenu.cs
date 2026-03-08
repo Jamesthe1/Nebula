@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace Nebula.ModConfig {
     public class CUIModConfigMenu : CUIMenu {
-        public const int MODCONFIG_SUBSTATE = 0x10000000;
-        /* Menus use a bit to self-identify, this one is available
+        /*
+         * Menus use a bit to self-identify, this one is available
          * Can't reference the real name despite putting it in the preloader; this is because these changes need to actually be applied to the DLL that we are referencing
          * TODO: See if it's possible to generate an object in `obj` with the assembly modified by Nebula.ModConfig.Prepatches
-         * TODO: Implement a MenuStack class that holds active menus in a Stack, replace the substate system
+         * TODO: Implement a MenuStack class that holds active menus in a Stack, replace the substate system, replace "menu substate on cancel" with a "rewind" feature
          */
+        public const int MODCONFIG_SUBSTATE = 0x10000000;
 
         public static Dictionary<Type, Type> entryTypes = new Dictionary<Type, Type> {
             {typeof(bool), typeof(CUIModConfigBoolEntry)},
@@ -39,7 +40,7 @@ namespace Nebula.ModConfig {
 
         public UIScrollView scrollView;
 
-        [Header("Main")]
+        [Header ("Main")]
         public UIPanel mainPanel;
 
         public List<UITable> optionsTables;
@@ -48,8 +49,6 @@ namespace Nebula.ModConfig {
 
         // Underscores and the "m" prefix auto-hide in inspector, not the fact that they are private
         private string _activeGuid = "";
-
-        private bool usingPopup;
 
         private static bool _optionsAreDirty;
         
@@ -65,7 +64,6 @@ namespace Nebula.ModConfig {
         }
 
         protected override void OnEnable () {
-            usingPopup = false;
             optionsAreDirty = false;
 
             CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
@@ -129,9 +127,6 @@ namespace Nebula.ModConfig {
         }
 
         protected override void Update () {
-            if (usingPopup)
-                return;
-
             bool menuCancel = Controls.player.GetButtonDown ("Menu Cancel") || Input.GetKeyDown (KeyCode.Escape);
             bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
             if (menuCancel && mouseNotCaptured) {
@@ -146,7 +141,6 @@ namespace Nebula.ModConfig {
         }
 
         private void PopupConfirmationMenu () {
-            usingPopup = true;
             AudioMenu.playConfirm = true;
             List<CUIConfirmationMenu.ConfirmationMenuDelegate> list = new List<CUIConfirmationMenu.ConfirmationMenuDelegate> {
                 OnApplyConfigsClicked,
