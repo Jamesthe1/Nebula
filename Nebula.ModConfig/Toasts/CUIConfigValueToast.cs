@@ -131,8 +131,6 @@ namespace Nebula.ModConfig.Toasts {
             }
         }
 
-        private bool _capturingInput = false;
-
         private void OnNewState (State newState, State oldState) {
             switch (newState) {
                 case State.Inactive:
@@ -188,11 +186,12 @@ namespace Nebula.ModConfig.Toasts {
             callbackEvents.Add (new EventDelegate (OnDiscardIndex));
         }
 
-        private void OnEnable () {
+        protected override void OnEnable () {
             state = State.InitialDelay;
+            base.OnEnable();
         }
 
-        private void Update () {
+        protected override void Update () {
             switch (state) {
                 case State.Inactive:
                     break;
@@ -211,14 +210,14 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         private void ToastUpdate() {
-            if (_capturingInput) {
+            if (Controls.lockAll && type == ToastType.KeyCode) {
                 CaptureInput ();
                 return;
             }
 
             bool menuCancel = Controls.player.GetButtonDown ("Menu Cancel") || Input.GetKeyDown (KeyCode.Escape);
             bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
-            if (menuCancel && mouseNotCaptured) {
+            if (!Controls.lockAll && menuCancel && mouseNotCaptured) {
                 AudioMenu.playCancel = true;
                 _callback = callbackEvents[1];
             }
@@ -230,7 +229,7 @@ namespace Nebula.ModConfig.Toasts {
                 return;
             
             keycodeLabel.text = @event.keyCode.ToString ();
-            _capturingInput = false;
+            Controls.lockAll = false;
         }
 
         /// <summary>
@@ -343,7 +342,7 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         public void OnKeyCodeClicked() {
-            _capturingInput = true;
+            Controls.lockAll = true;
         }
     }
 }
