@@ -24,38 +24,25 @@ namespace Nebula.ModConfig.Toasts {
             anchor.gameObject.CopyParentLayer ();
             configGate.gameObjects.Add (anchor.gameObject);
             
-            CUIConfigValueToast cfgMenu = NGUITools.AddChild<CUIConfigValueToast> (anchor.gameObject);
-            cfgMenu.applyChangesClip = Resources.Load<AudioClip> ("AudioClip/beep_select_04");
-            cfgMenu.applyChangesPitch = 0.3f;
-            cfgMenu.applyChangesVolume = 0.58f;
-            cfgMenu.menuSubstateOnCancel = (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE;
-            cfgMenu.name = "ROOT_ModConfig";
+            // Older version of Unity; Awake is called only on the first enable. Thusly, we have to instantiate everything here. Boo!!!
+            CUIConfigValueToast cfgToast = NGUITools.AddChild<CUIConfigValueToast> (anchor.gameObject);
+            CUIConfigValueToast.instance = cfgToast;
+            cfgToast.audioSource = GameObjectUtils.GetRootObject ("# AUDIO").transform.FindChild ("AUDIO_StoryToast").GetComponent<AudioSource> ();
+            cfgToast.applyChangesClip = Resources.Load<AudioClip> ("AudioClip/beep_select_04");
+            cfgToast.applyChangesPitch = 0.3f;
+            cfgToast.applyChangesVolume = 0.58f;
+            cfgToast.menuSubstateOnCancel = (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE;
+            cfgToast.name = "ROOT_ModConfig";
             
-            cfgMenu.transform.parent = anchor.transform;
-            cfgMenu.gameObject.CopyParentLayer ();
-
-            CreateConfigToast (menuRoot);
-        }
-
-        private static void CreateConfigToast (Transform menuRoot) {
-            // Placing it next to the thing
-            UIPanel panel = NGUITools.AddChild<UIPanel> (menuRoot.gameObject);
-            panel.renderQueue = UIPanel.RenderQueue.Automatic;
-            panel.startingRenderQueue = 3049;
-            panel.depth = 4;
-            panel.name = "PANEL_ConfigEntry";
+            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnApplyIndex));
+            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnDiscardIndex));
             
-            panel.gameObject.SetActive (false);
-            panel.gameObject.CopyParentLayer ();
+            cfgToast.transform.parent = anchor.transform;
+            cfgToast.gameObject.CopyParentLayer ();
 
-            Rigidbody rb = panel.gameObject.AddComponent<Rigidbody> ();
-            rb.useGravity = false;
-            rb.isKinematic = true;
+            CreateConfigToastChildren (cfgToast);
 
-            CUIConfigValueToast toast = panel.gameObject.AddComponent<CUIConfigValueToast> ();
-            toast.audioSource = GameObjectUtils.GetRootObject ("# AUDIO").transform.FindChild ("AUDIO_StoryToast").GetComponent<AudioSource> ();
-
-            CreateConfigToastChildren (toast);
+            cfgToast.state = CUIConfigValueToast.State.Inactive;
         }
 
         private static void CreateConfigToastChildren (CUIConfigValueToast toast) {

@@ -179,13 +179,6 @@ namespace Nebula.ModConfig.Toasts {
             }
         }
 
-        private void Awake () {
-            instance = this;
-            state = State.Inactive; // Force panel to update
-            callbackEvents.Add (new EventDelegate (OnApplyIndex));
-            callbackEvents.Add (new EventDelegate (OnDiscardIndex));
-        }
-
         protected override void OnEnable () {
             state = State.InitialDelay;
             base.OnEnable();
@@ -307,6 +300,7 @@ namespace Nebula.ModConfig.Toasts {
 
         [ContextMenu ("Reposition Table")]
         private void RepositionTable () {
+            // NRE generated somewhere here when ToastSequence coroutine gets activated
             toastLabelBackground.GetComponent<CUICenterOnParent> ().Align ();
             toastTable.Reposition ();
             Vector3 localPosition = toastTable.transform.localPosition;
