@@ -17,7 +17,8 @@ namespace Nebula.ModConfig {
             {typeof(bool), typeof(CUIModConfigBoolEntry)},
             {typeof(int), typeof(CUIModConfigIntEntry)},
             {typeof(string), typeof(CUIModConfigStringEntry)},
-            {typeof(Enum), typeof(CUIModConfigEnumGenericEntry)}
+            {typeof(Enum), typeof(CUIModConfigEnumGenericEntry)},
+            {typeof(KeyCode), typeof(CUIModConfigKeyCodeEntry)},
         };
 
         public CUIButtonInput defaultButtonInput;
