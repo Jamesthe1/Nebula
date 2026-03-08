@@ -179,7 +179,7 @@ namespace Nebula.ModConfig.Toasts {
             CUIButtonInput prev = null;
             CUIButtonInput[] topInputs = table.GetComponentsInChildren<CUIButtonInput> ();
             for (int i = 0; i < buttonTitles.Count; i++) {
-                CUIButtonInput buttonInput = GenerateConfigToastButton (i + 1, grid, toast);
+                CUIButtonInput buttonInput = GenerateConfigToastButton (i, grid, toast);
                 buttonInput.transform.localPosition = new Vector3 (-180 + 360 * i, 0, 0);
                 if (prev != null) {
                     buttonInput.selectOnLeft = prev;
@@ -200,10 +200,11 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         private static CUIButtonInput GenerateConfigToastButton (int i, UIGrid grid, CUIConfigValueToast toast) {
+            int iVisual = i + 1;
             UIButton button = grid.gameObject.CreateButton (
                 new Vector3 (360, 40, 0),
-                i.ToString ("D3") + "_BUTTON",
-                "BUTTON " + i,
+                iVisual.ToString ("D3") + "_BUTTON",
+                "BUTTON " + iVisual,
                 new List<EventDelegate> (),
                 20,
                 Color.white
@@ -212,14 +213,10 @@ namespace Nebula.ModConfig.Toasts {
             toast.bottomButtonLabels.Add (button.GetComponentInChildren<UILabel> ());
 
             CUIButtonInput buttonInput = button.GetComponent<CUIButtonInput> ();
-            if (i == 1)
+            if (i == 0)
                 buttonInput.startsSelected = true;
 
             button.GetComponent<BoxCollider> ().center = Vector3.zero;
-
-            LateCallbackToastButton lateCallback = button.gameObject.AddComponent<LateCallbackToastButton> ();
-            lateCallback.configToast = toast;
-            lateCallback.onLateEvent = toast.callbackEvents[i];
 
             return buttonInput;
         }
