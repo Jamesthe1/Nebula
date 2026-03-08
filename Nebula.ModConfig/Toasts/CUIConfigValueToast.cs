@@ -83,9 +83,9 @@ namespace Nebula.ModConfig.Toasts {
 
         public UILabel keycodeLabel;
 
-        public List<UIButton> bottomButtons;
+        public List<UIButton> bottomButtons = new List<UIButton> ();
 
-        public List<UILabel> bottomButtonLabels;
+        public List<UILabel> bottomButtonLabels = new List<UILabel> ();
 
         public AudioSource audioSource;
 
