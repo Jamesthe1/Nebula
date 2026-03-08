@@ -83,10 +83,8 @@ namespace Nebula.ModConfig.Toasts {
             table.sorting = UITable.Sorting.None;
             table.direction = UITable.Direction.Down;
             table.name = "TABLE_ConfigEntry";
-
             table.transform.localPosition = new Vector3 (-360, 91, 0);
             table.gameObject.CopyParentLayer ();
-
             toast.toastTable = table;
 
             UILabel header = table.gameObject.CreateLabel (
@@ -106,10 +104,10 @@ namespace Nebula.ModConfig.Toasts {
             labelBg.height = 96;
             labelBg.depth = -1;
             labelBg.mainTexture = Resources.Load<Texture2D> ("ui/ngui/fill_64x");
-
+            labelBg.transform.localPosition = new Vector3 (0, -55, 0);
             toast.toastLabelBackground = labelBg;
             
-            CUICenterOnParent ctr = header.gameObject.AddComponent<CUICenterOnParent> ();
+            CUICenterOnParent ctr = labelBg.gameObject.AddComponent<CUICenterOnParent> ();
             ctr.padWidget = true;
             ctr.widthPadding = 32;
             ctr.heightPadding = 16;

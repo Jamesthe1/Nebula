@@ -300,7 +300,6 @@ namespace Nebula.ModConfig.Toasts {
 
         [ContextMenu ("Reposition Table")]
         private void RepositionTable () {
-            // NRE generated somewhere here when ToastSequence coroutine gets activated
             toastLabelBackground.GetComponent<CUICenterOnParent> ().Align ();
             toastTable.Reposition ();
             Vector3 localPosition = toastTable.transform.localPosition;
