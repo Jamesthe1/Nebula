@@ -60,12 +60,17 @@ namespace Nebula.ModConfig {
 
         private static void CreateConfigMenuButton (CUIModConfigMenu cfgMenu, CUIOptionsMenu optionsMenu) {
             optionsMenu.buttonTable.gameObject.CreateButton (
-                new Vector3 (256, 20, 0),
                 "011_BUTTON_ModConfig",
-                "MOD SETTINGS",
-                new List<EventDelegate> () { new EventDelegate (cfgMenu.OnModConfigButtonClicked) },
-                20,
-                Color.white
+                new UIFactory.ButtonSettings {
+                    Size = new Vector3 (256, 20, 0),
+                    OnClick = new List<EventDelegate> () { new EventDelegate (cfgMenu.OnModConfigButtonClicked) }
+                },
+                new UIFactory.LabelSettings {
+                    FontSize = 20,
+                    Width = 256,
+                    Text = "MOD SETTINGS"
+                },
+                UIWidget.Pivot.Right
             );
         }
 
@@ -108,33 +113,29 @@ namespace Nebula.ModConfig {
 
             UILabel titleLabel = titleRoot.gameObject.CreateLabel (
                 "LABEL_Title",
-                "MOD SETTINGS",
-                Color.white,
-                42,
-                166,
-                StockFonts.serifGothic["Heavy"]
+                new UIFactory.LabelSettings {
+                    Text = "MOD SETTINGS",
+                    FontSize = 42,
+                    Width = 166,
+                    Font = StockFonts.serifGothic["Heavy"]
+                },
+                UIWidget.Pivot.BottomRight
             );
-            titleLabel.pivot = UIWidget.Pivot.BottomRight;
             titleLabel.transform.localPosition = new Vector3 (0, -8, 0);
-            titleLabel.gameObject.CopyParentLayer ();
 
-            UITexture titleBg = NGUITools.AddWidget<UITexture> (titleLabel.gameObject);
-            titleBg.width = 400;
-            titleBg.height = 2;
-            titleBg.mainTexture = Resources.Load<Texture2D> ("ui/ngui/textures/fill_64x");  // Assets/Resources is implied
-            titleBg.shader = Shader.Find ("Unlit/Transparent Colored");
-            titleBg.name = "000_TEXTURE_HeaderBackground";
-            titleBg.pivot = UIWidget.Pivot.Right;
-
-            titleBg.transform.localPosition = new Vector3 (16, 0, 0);
-            titleBg.gameObject.CopyParentLayer ();
+            UITexture titleRule = titleLabel.gameObject.CreateTextureBackground (
+                new UIFactory.TextureSettings {
+                    Color = Color.white,
+                    Size = new Vector3 (400, 2)
+                },
+                UIWidget.Pivot.Right
+            );
+            titleRule.transform.localPosition = new Vector3 (16, 0, 0);
 
             CreateConfigMenuModButtons (leftRoot, cfgMenu);
         }
 
         private static void CreateConfigMenuModButtons (Transform leftRoot, CUIModConfigMenu cfgMenu) {
-            // TODO: Consider a UIPanel here, may need to make a new value in the ModConfigMenu and apply changes accordingly
-
             UITable modList = NGUITools.AddChild<UITable> (leftRoot.gameObject);
             modList.columns = 1;
             modList.direction = UITable.Direction.Down;
@@ -187,15 +188,18 @@ namespace Nebula.ModConfig {
 
         private static UIButton GenerateModButton (int i, string name, string text, List<EventDelegate> onClick, GameObject root) {
             UIButton button = root.CreateButton (
-                new Vector3 (256, 20, 0),
-                (i * 10).ToString ("D3") + "_BUTTON_" + name,   // With i++ being at the end of the loop, this will always be last
-                text,
-                onClick,
-                20,
-                Color.white
+                (i * 10).ToString ("D3") + "_BUTTON_" + name,
+                new UIFactory.ButtonSettings {
+                    Size = new Vector3 (256, 20, 0),
+                    OnClick = onClick
+                },
+                new UIFactory.LabelSettings {
+                    Text = text,
+                    FontSize = 20
+                },
+                UIWidget.Pivot.Right
             );
             button.transform.localPosition = new Vector3 (240, 15 - (i * 30), 0);
-            button.GetComponent<CUIButtonInput> ().sendsOnClickOnConfirm = true;
             return button;
         }
 
@@ -233,7 +237,7 @@ namespace Nebula.ModConfig {
             cfgMenu.scrollView = scrollView;
             menuRoot.settingsScrollView = scrollView;
             
-            UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar (1f, "SLIDER_Scrollbar", scrollView);
+            UIScrollBar scrollBar = mCtrl.gameObject.CreateVerticalScrollBar ("SLIDER_Scrollbar", 1f, scrollView);
             scrollBar.transform.localPosition = new Vector3 (-24, 0, 0);
             mCtrl.gameObjects.Add (scrollBar.gameObject);
 
@@ -304,12 +308,15 @@ namespace Nebula.ModConfig {
                     i++;
                 }
 
-                UILabel spacer = parent.CreateLabel (
+                // Spacer for padding
+                _ = parent.CreateLabel (
                     (i * 10 + 9).ToString ("D3") + "_SPACER_10",
-                    "",
-                    Color.clear,
-                    10,
-                    100
+                    new UIFactory.LabelSettings {
+                        Color = Color.clear,
+                        FontSize = 10,
+                        Width = 100
+                    },
+                    UIWidget.Pivot.Right
                 );
             }
         }
@@ -317,44 +324,45 @@ namespace Nebula.ModConfig {
         private static UILabel GenerateModSectionLabel (int i, string name, GameObject root) {
             UILabel label = root.CreateLabel (
                 (i * 10).ToString ("D3") + "_LABEL_" + name,
-                name.PascalNameToTitle (),
-                new Color (1f, 0.6431f, 0f),
-                32,
-                126
+                new UIFactory.LabelSettings {
+                    Text = name.PascalNameToTitle (),
+                    Color = new Color (1f, 0.6431f, 0f),
+                    FontSize = 32,
+                    Width = 126
+                },
+                UIWidget.Pivot.Left
             );
-            label.pivot = UIWidget.Pivot.Left;
             label.transform.localPosition = new Vector3 (0, -15 - (i * 30), 0);
             return label;
         }
 
         private static UIButton GenerateModButtonOption (int i, string name, ConfigEntryBase cfgKeyValue, Type valueType, GameObject root) {
             UIButton button = root.CreateButton (
-                new Vector3 (640, 20, 0),
                 (i * 10).ToString ("D3") + "_BUTTON_" + name,
-                name.PascalNameToTitle (),
-                new List<EventDelegate> (),
-                20,
-                Color.white
+                new UIFactory.ButtonSettings {
+                    Size = new Vector3 (640, 20)
+                },
+                new UIFactory.LabelSettings {
+                    Text = name.PascalNameToTitle (),
+                    FontSize = 20,
+                    Width = 640
+                },
+                UIWidget.Pivot.Left
             );
             button.transform.localPosition = new Vector3 (0, -15 - (i * 30), 0);
-            button.GetComponent<BoxCollider> ().center = new Vector3 (320, 0, 0);
             button.GetComponent<CUIMenuAudioTrigger> ().clipType = CUIMenuAudioTrigger.AudioClipType.ToggleOption;
 
-            UILabel keyLabel = button.transform.FindChild ("LABEL_Button").GetComponent<UILabel> ();
-            keyLabel.pivot = UIWidget.Pivot.Left;
-            keyLabel.transform.localPosition = new Vector3 (4, 0, 0);
-
-            UITexture bg = button.transform.FindChild ("TEXTURE_Background").GetComponent<UITexture> ();
-            bg.color = Color.clear;
-            bg.pivot = UIWidget.Pivot.Left;
+            UITexture bg = button.transform.GetComponentInChildren<UITexture> ();
             bg.transform.localPosition = Vector3.zero;
 
             UILabel valueLabel = button.gameObject.CreateLabel (
                 "LABEL_Value",
-                "",
-                Color.white,
-                20,
-                160
+                new UIFactory.LabelSettings {
+                    Text = "VALUE",
+                    FontSize = 20,
+                    Width = 160
+                },
+                UIWidget.Pivot.Right
             );
             valueLabel.transform.localPosition = new Vector3 (636, 0, 0);
 

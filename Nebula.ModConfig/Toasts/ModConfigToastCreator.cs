@@ -8,7 +8,7 @@ namespace Nebula.ModConfig.Toasts {
     internal static class ModConfigToastCreator {
         public static void CreateToasts (Transform menuRoot, Camera uiCam) {
             MenuSubstateGate configGate = NGUITools.AddChild<MenuSubstateGate> (menuRoot.gameObject);
-            configGate.name = "GATE_ModConfig";
+            configGate.name = "GATE_ConfigToast";
             configGate.activeStateMask = (MenuSubstate)CUIConfigValueToast.CONFIGTOAST_SUBSTATE;
             configGate.transform.SetParent (menuRoot);
 
@@ -17,7 +17,7 @@ namespace Nebula.ModConfig.Toasts {
             anchor.side = UIAnchor.Side.Center;
             anchor.runOnlyOnce = true;
             anchor.relativeOffset = new Vector2 (0, -0.07f);
-            anchor.name = "ANCHOR_ModConfig";
+            anchor.name = "ANCHOR_ConfigToast";
 
             anchor.transform.position = new Vector3 (0, -76, 0);
             anchor.gameObject.SetActive (false);
@@ -32,10 +32,10 @@ namespace Nebula.ModConfig.Toasts {
             cfgToast.applyChangesPitch = 0.3f;
             cfgToast.applyChangesVolume = 0.58f;
             cfgToast.menuSubstateOnCancel = (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE;
-            cfgToast.name = "ROOT_ModConfig";
+            cfgToast.name = "ROOT_ConfigToast";
             
-            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnApplyIndex));
-            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnDiscardIndex));
+            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnApplyImmediate));
+            cfgToast.callbackEvents.Add (new EventDelegate (cfgToast.OnDiscardImmediate));
             
             cfgToast.transform.parent = anchor.transform;
             cfgToast.gameObject.CopyParentLayer ();
@@ -60,57 +60,59 @@ namespace Nebula.ModConfig.Toasts {
 
             TweenAlpha tweenAlphaIn = panel.gameObject.AddComponent<TweenAlpha> ();
             tweenAlphaIn.from = 0f;
+            tweenAlphaIn.duration = 0.2f;
             tweenAlphaIn.enabled = false;
             toast.transitionInTweens.Add (tweenAlphaIn);
 
             TweenPosition tweenPosIn = panel.gameObject.AddComponent<TweenPosition> ();
             tweenPosIn.from = new Vector3 (240, 0, 0);
+            tweenPosIn.duration = 0.2f;
             tweenPosIn.to = Vector3.zero;
             toast.transitionInTweens.Add (tweenPosIn);
 
             TweenAlpha tweenAlphaOut = panel.gameObject.AddComponent<TweenAlpha> ();
             tweenAlphaOut.to = 0f;
+            tweenAlphaOut.duration = 0.2f;
             tweenAlphaOut.enabled = false;
             toast.transitionOutTweens.Add (tweenAlphaOut);
 
             TweenPosition tweenPosOut = panel.gameObject.AddComponent<TweenPosition> ();
             tweenPosOut.to = new Vector3 (-240, 0, 0);
+            tweenPosOut.duration = 0.2f;
             tweenPosOut.from = Vector3.zero;
             toast.transitionOutTweens.Add (tweenPosOut);
+
+            UITexture toastBg = NGUITools.AddWidget<UITexture> (panel.gameObject);
+            toastBg.color = new Color (0, 0, 0, 0.9608f);
+            toastBg.width = 720;
+            toastBg.height = 115;
+            toastBg.depth = -1;
+            toastBg.mainTexture = Resources.Load<Texture2D> ("ui/ngui/textures/fill_64x");
+            toastBg.pivot = UIWidget.Pivot.Center;
+            toastBg.transform.localPosition = new Vector3 (0, 0, 0);
+            toast.toastLabelBackground = toastBg;
 
             UITable table = NGUITools.AddChild<UITable> (panel.gameObject);
             table.columns = 1;
             table.sorting = UITable.Sorting.None;
             table.direction = UITable.Direction.Down;
             table.name = "TABLE_ConfigEntry";
-            table.transform.localPosition = new Vector3 (-360, 91, 0);
+            table.transform.localPosition = new Vector3 (-360, 56, 0);
             table.gameObject.CopyParentLayer ();
             toast.toastTable = table;
 
             UILabel header = table.gameObject.CreateLabel (
                 "LABEL_Header",
-                "HEADER",
-                Color.white,
-                32,
-                320,
-                StockFonts.blender["Bold"]
+                new UIFactory.LabelSettings {
+                    Text = "HEADER",
+                    Font = StockFonts.blender["Bold"],
+                    FontSize = 32,
+                    Width = 320
+                },
+                UIWidget.Pivot.TopLeft
             );
-            header.transform.localPosition = new Vector3 (0, 7, 0);
+            header.transform.localPosition = new Vector3 (10, 7, 0);
             toast.toastLabel = header;
-
-            UITexture labelBg = NGUITools.AddWidget<UITexture> (header.gameObject);
-            labelBg.color = new Color (0, 0, 0, 0.9608f);
-            labelBg.width = 720;
-            labelBg.height = 96;
-            labelBg.depth = -1;
-            labelBg.mainTexture = Resources.Load<Texture2D> ("ui/ngui/fill_64x");
-            labelBg.transform.localPosition = new Vector3 (0, -55, 0);
-            toast.toastLabelBackground = labelBg;
-            
-            CUICenterOnParent ctr = labelBg.gameObject.AddComponent<CUICenterOnParent> ();
-            ctr.padWidget = true;
-            ctr.widthPadding = 32;
-            ctr.heightPadding = 16;
 
             CreateInputHandlers (toast, table);
             CreateConfigToastButtons (toast, table);
@@ -119,26 +121,33 @@ namespace Nebula.ModConfig.Toasts {
         private static void CreateInputHandlers (CUIConfigValueToast toast, UITable table) {
             UIInput input = table.gameObject.CreateInput (
                 "INPUT_Text",
-                Color.white,
-                24,
-                656,
-                3
+                new UIFactory.InputFieldSettings {
+                    Font = StockFonts.blender["Bold"],
+                    FontSize = 24,
+                    Width = 656,
+                    MaxLineCount = 3
+                },
+                UIWidget.Pivot.Top
             );
-            input.transform.localPosition = new Vector3 (360, -16, 0);
+            input.transform.localPosition = new Vector3 (0, -16, 0);
             input.gameObject.SetActive (false);
             toast.inputField = input;
 
-            input.gameObject.CreateTextureBackground (new Color (0.0392f, 0.0392f, 0.0392f), input.label.width, input.label.height);
-
             UIButton keycode = table.gameObject.CreateButton (
-                new Vector3 (656, 40),
                 "BUTTON_KeyCode",
-                "KEYCODE GOES HERE",
-                new List<EventDelegate> () {new EventDelegate (toast.OnKeyCodeClicked)},
-                24,
-                Color.white
+                new UIFactory.ButtonSettings {
+                    Size = new Vector3 (656, 40),
+                    OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) }
+                },
+                new UIFactory.LabelSettings {
+                    Width = 656,
+                    Effect = UILabel.Effect.None,
+                    Text = "KEYCODE",
+                    FontSize = 24
+                },
+                UIWidget.Pivot.Center
             );
-            keycode.transform.localPosition = new Vector3 (360, -16, 0);
+            keycode.transform.localPosition = new Vector3 (0, -16, 0);
             keycode.gameObject.SetActive (false);
             toast.keycodeButton = keycode;
 
@@ -156,7 +165,7 @@ namespace Nebula.ModConfig.Toasts {
             grid.cellHeight = 400f;
             grid.enabled = false;
 
-            grid.transform.localPosition = new Vector3 (360, -116, 0);
+            grid.transform.localPosition = new Vector3 (0, -116, 0);
             grid.gameObject.CopyParentLayer ();
 
             List<string> buttonTitles = CUIConfigValueToast.buttonTitles;
@@ -187,15 +196,22 @@ namespace Nebula.ModConfig.Toasts {
         private static CUIButtonInput GenerateConfigToastButton (int i, UIGrid grid, CUIConfigValueToast toast) {
             int iVisual = i + 1;
             UIButton button = grid.gameObject.CreateButton (
-                new Vector3 (360, 40, 0),
                 iVisual.ToString ("D3") + "_BUTTON",
-                "BUTTON " + iVisual,
-                new List<EventDelegate> (),
-                20,
-                Color.white
+                new UIFactory.ButtonSettings {
+                    Size = new Vector3 (360, 40, 0),
+                    OnClick = new List<EventDelegate> () { toast.callbackEvents[i] }
+                },
+                new UIFactory.LabelSettings {
+                    Width = 360,
+                    Text = "BUTTON " + iVisual,
+                    FontSize = 20
+                },
+                UIWidget.Pivot.Center
             );
             toast.bottomButtons.Add (button);
-            toast.bottomButtonLabels.Add (button.GetComponentInChildren<UILabel> ());
+
+            UILabel buttonLabel = button.GetComponentInChildren<UILabel> ();
+            toast.bottomButtonLabels.Add (buttonLabel);
 
             CUIButtonInput buttonInput = button.GetComponent<CUIButtonInput> ();
             if (i == 0)

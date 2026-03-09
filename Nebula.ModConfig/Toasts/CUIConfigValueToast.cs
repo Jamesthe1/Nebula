@@ -163,10 +163,12 @@ namespace Nebula.ModConfig.Toasts {
                 case ToastType.String:
                     inputField.gameObject.SetActive (true);
                     input = inputField.GetComponent<CUIButtonInput> ();
+                    inputField.value = ((CUIModConfigEntry<string>)_query.source).value;
                     break;
                 case ToastType.KeyCode:
                     keycodeButton.gameObject.SetActive (true);
                     input = keycodeButton.GetComponent<CUIButtonInput> ();
+                    keycodeLabel.text = _query.source.valueLabel.text;
                     break;
                 default:
                     throw new NotSupportedException ("New toast type not recognized");
@@ -212,16 +214,16 @@ namespace Nebula.ModConfig.Toasts {
             bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
             if (!Controls.lockAll && menuCancel && mouseNotCaptured) {
                 AudioMenu.playCancel = true;
-                _callback = callbackEvents[1];
+                OnDiscardImmediate ();
             }
         }
 
-        private void CaptureInput() {
+        private void CaptureInput () {
             Event @event = Event.current;
             if (@event.type != EventType.KeyDown)
                 return;
             
-            keycodeLabel.text = @event.keyCode.ToString ();
+            keycodeLabel.text = @event.keyCode.ToString ().ToUpper ();
             Controls.lockAll = false;
         }
 
@@ -300,12 +302,15 @@ namespace Nebula.ModConfig.Toasts {
 
         [ContextMenu ("Reposition Table")]
         private void RepositionTable () {
-            toastLabelBackground.GetComponent<CUICenterOnParent> ().Align ();
             toastTable.Reposition ();
+            toastLabel.transform.localPosition = new Vector3 (10, 0, 0);
+
             Vector3 localPosition = toastTable.transform.localPosition;
             Bounds bounds = NGUIMath.CalculateRelativeWidgetBounds (toastTable.transform);
             localPosition.y = bounds.extents.y;
             toastTable.transform.localPosition = localPosition;
+            toastLabelBackground.width = (int)bounds.extents.x * 2;
+            toastLabelBackground.height = (int)bounds.extents.y * 2;
         }
 
         private void FireCallback () {
@@ -314,7 +319,7 @@ namespace Nebula.ModConfig.Toasts {
             }
         }
 
-        public void OnApplyIndex () {
+        public void OnApplyImmediate () {
             string data = inputField.value;
             switch (_type) {
                 case ToastType.String:
@@ -327,10 +332,14 @@ namespace Nebula.ModConfig.Toasts {
                     break;
             }
 
-            Game.Instance.menuSubstate = _query.menuSubstateOnExit;
+            _callback = new EventDelegate (ExitToQuerySubstate);
         }
 
-        public void OnDiscardIndex () {
+        public void OnDiscardImmediate () {
+            _callback = new EventDelegate (ExitToQuerySubstate);
+        }
+
+        private void ExitToQuerySubstate () {
             Game.Instance.menuSubstate = _query.menuSubstateOnExit;
         }
 

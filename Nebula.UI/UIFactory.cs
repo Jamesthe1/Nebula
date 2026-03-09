@@ -3,70 +3,115 @@ using Nebula.Utils;
 using UnityEngine;
 
 namespace Nebula.UI {
-    // TODO: Replace most arguments with a settings class, some with default values. Maybe a constructor for required items?
     public static class UIFactory {
-        public static UILabel CreateLabel (this GameObject root, string name, string text, Color color, int fontSize, int width,
-                Font ttf = null, UILabel.Effect effect = UILabel.Effect.Shadow) {
+        public class LabelSettings {
+            public string Text { get; set; } = "";
+            public Color Color { get; set; } = Color.white;
+            public int FontSize { get; set; }
+            public int Width { get; set; }
+            public Font Font { get; set; } = StockFonts.microgramma["BoldDynamic"];
+            public UILabel.Effect Effect { get; set; } = UILabel.Effect.Shadow;
+            public int MaxLineCount { get; set; } = 0;
+        }
 
+        public static UILabel CreateLabel (this GameObject root, string name, LabelSettings settings, UIWidget.Pivot pivot) {
             UILabel label = NGUITools.AddWidget<UILabel> (root);
             label.name = name;
-            label.text = text;
-            label.effectStyle = effect;
-            label.color = color;
+            label.text = settings.Text;
+            label.effectStyle = settings.Effect;
+            label.color = settings.Color;
 
-            label.height = fontSize;
-            label.width = width;
+            label.height = settings.FontSize * settings.MaxLineCount;
+            label.maxLineCount = settings.MaxLineCount;
+            label.width = settings.Width;
             label.overflowMethod = UILabel.Overflow.ResizeFreely;
-            label.pivot = UIWidget.Pivot.Right;
+            label.pivot = pivot;
             label.transform.localPosition = Vector3.zero;
             
-            label.trueTypeFont = ttf ?? StockFonts.microgramma["BoldDynamic"];
-            label.fontSize = fontSize;
+            label.trueTypeFont = settings.Font;
+            label.fontSize = settings.FontSize;
 
             return label;
         }
 
-        public static UITexture CreateTextureBackground (this GameObject root, Color fromColor, int width, int height) {
+        public class TextureSettings {
+            public Vector3 Size { get; set; }
+            public Color Color { get; set; } = Color.clear;
+        }
+
+        public static UITexture CreateTextureBackground (this GameObject root, TextureSettings settings, UIWidget.Pivot pivot) {
             Texture2D texture = Resources.Load<Texture2D> ("ui/ngui/textures/fill_64x");
             UITexture child = NGUITools.AddWidget<UITexture> (root);
             child.name = "TEXTURE_Background";
             child.mainTexture = texture;
-            child.color = Color.clear;
-            child.pivot = UIWidget.Pivot.Right;
-            child.transform.localPosition = new Vector3 (16, 0, 0);
+            child.color = settings.Color;
+            child.pivot = pivot;
+            child.shader = Shader.Find ("Unlit/Transparent Colored");
 
-            child.width = width;
-            child.height = height;
+            child.width = (int)settings.Size.x;
+            child.height = (int)settings.Size.y;
             child.depth = -1;
-
-            // Needed for hover color
-            TweenColor tweenColor = child.gameObject.AddComponent<TweenColor> ();
-            tweenColor.from = fromColor;
-            tweenColor.to = Color.clear;
-            tweenColor.duration = 0.01f;
 
             return child;
         }
 
-        public static UIButton CreateButton (this GameObject root, Vector3 size, string name, string text, List<EventDelegate> onClick, int fontSize,
-                Color color, Font ttf = null) {
+        public static UISprite AddSpriteComponent (this GameObject root, TextureSettings settings, UIWidget.Pivot pivot) {
+            UISprite sprite = root.AddComponent<UISprite> ();
+            sprite.pivot = pivot;
+            sprite.transform.localPosition = settings.Size.GetOffset (pivot);
+            sprite.atlas = Resources.Load<UIAtlas> ("ui/ngui/StarfighterAtlas");
+            sprite.spriteName = "fill_64x";
+            sprite.type = UISprite.Type.Sliced;
+            sprite.width = (int)settings.Size.x;
+            sprite.height = (int)settings.Size.y;
+            sprite.color = settings.Color;
+            sprite.tilingScaleX = 1;
+
+            return sprite;
+        }
+
+        public static UISprite CreateSprite (this GameObject root, string name, TextureSettings settings, UIWidget.Pivot pivot) {
+            GameObject child = NGUITools.AddChild (root);
+            child.CopyParentLayer ();
+            child.name = name;
+
+            return child.AddSpriteComponent (settings, pivot);
+        }
+
+        private static BoxCollider CreateInteractionArea (this GameObject root, Vector3 size, UIWidget.Pivot pivot) {
+            BoxCollider box = root.AddComponent<BoxCollider> ();
+            box.size = size;
+            box.center = size.GetOffset (pivot);
+            box.isTrigger = true;
+
+            return box;
+        }
+
+        public class ButtonSettings : TextureSettings {
+            public float TweenDuration { get; set; } = 0.01f;
+            // Colors below taken from the actual implementation of UIButtonColor
+            public Color HoverColor { get; set; } = new Color (0.7686f, 0.1804f, 0f);
+            public Color PressedColor { get; set; } = new Color (0.7725f, 0.1808f, 0f);
+            public Color DisabledColor { get; set; } = Color.gray;
+            public List<EventDelegate> OnClick { get; set; } = new List<EventDelegate> ();
+            public bool UseSpriteAtlas { get; set; } = false;
+        }
+
+        public static UIButton CreateButton (this GameObject root, string name, ButtonSettings settings, LabelSettings labelSettings, UIWidget.Pivot pivot) {
+            bool useLabel = labelSettings != null;
 
             GameObject buttonObj = NGUITools.AddChild (root);
             buttonObj.name = name;
-            buttonObj.layer = root.layer;
             buttonObj.CopyParentLayer ();
 
-            // Needs to exist before the actual button
-            BoxCollider box = buttonObj.AddComponent<BoxCollider> ();
-            box.size = size;
-            box.center = new Vector3 (-size.x / 2, 2, 0);
-            box.isTrigger = true;
-
             UIButton button = buttonObj.AddComponent<UIButton> ();
-            button.onClick = onClick;
-            button.hover = new Color (0.7686f, 0.1804f, 0f);    // Hover color used by all menu items
-            button.pressed = new Color (0.7725f, 0.1808f, 0f);
+            button.onClick = settings.OnClick;
+            button.hover = settings.HoverColor;
+            button.pressed = settings.PressedColor;
+            button.disabledColor = settings.DisabledColor;
             button.duration = 0.01f;
+
+            _ = buttonObj.CreateInteractionArea (settings.Size, pivot);
             
             CUIButtonInput buttonInput = buttonObj.AddComponent<CUIButtonInput> ();
             buttonInput.inputType = CUIButtonInput.InputType.Menu;
@@ -76,10 +121,33 @@ namespace Nebula.UI {
             audioTrigger.clipType = CUIMenuAudioTrigger.AudioClipType.Confirm;
             audioTrigger.trigger = CUIMenuAudioTrigger.Trigger.OnClick;
 
-            buttonObj.CreateLabel ("LABEL_Button", text, color, fontSize, (int)size.x, ttf);
+            GameObject tweenTarget;
+            if (!settings.UseSpriteAtlas) {
+                UITexture bgTexture = buttonObj.CreateTextureBackground (settings, pivot);
+                tweenTarget = bgTexture.gameObject;
+            }
+            else {
+                if (useLabel) {
+                    UISprite bgSprite = buttonObj.CreateSprite ("SPRITE_Background", settings, pivot);
+                    bgSprite.depth = -1;
+                    tweenTarget = bgSprite.gameObject;
+                }
+                else {
+                    _ = buttonObj.AddSpriteComponent (settings, pivot);
+                    tweenTarget = buttonObj;
+                }
+            }
+            
+            // Needed for hover color
+            TweenColor tweenColor = tweenTarget.gameObject.AddComponent<TweenColor> ();
+            tweenColor.from = settings.HoverColor;
+            tweenColor.to = settings.Color;
+            tweenColor.duration = settings.TweenDuration;
+            button.tweenTarget = tweenTarget;
 
-            UITexture bg = buttonObj.CreateTextureBackground (button.hover, (int)size.x, (int)size.y);
-            button.tweenTarget = bg.gameObject;
+            if (useLabel) {
+                _ = buttonObj.CreateLabel ("LABEL_Button", labelSettings, pivot);
+            }
 
             return button;
         }
@@ -92,7 +160,7 @@ namespace Nebula.UI {
             return tooltip;
         }
 
-        public static UIScrollBar CreateVerticalScrollBar (this GameObject root, float barSize, string name, UIScrollView scrollView) {
+        public static UIScrollBar CreateVerticalScrollBar (this GameObject root, string name, float barSize, UIScrollView scrollView) {
             UIPanel scrollBarPanel = NGUITools.AddChild<UIPanel> (root);
             scrollBarPanel.showInPanelTool = false;
             scrollBarPanel.renderQueue = UIPanel.RenderQueue.StartAt;
@@ -109,70 +177,47 @@ namespace Nebula.UI {
             scrollBar.gameObject.CopyParentLayer ();
             scrollBar.enabled = true;
             scrollView.verticalScrollBar = scrollBar;
+
+            UISprite bgSprite = scrollBar.gameObject.CreateSprite (
+                "Background",
+                new TextureSettings {
+                    Color = Color.black,
+                    Size = new Vector3 (2, 288, 0)
+                },
+                UIWidget.Pivot.Top
+            );
+            bgSprite.depth = -1;
+            bgSprite.transform.localPosition = Vector3.zero;
+            scrollBar.backgroundWidget = bgSprite;
+
+            _ = bgSprite.gameObject.CreateInteractionArea (new Vector3 (16, 288, 0), UIWidget.Pivot.Top);
             
-            UISprite bg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
-            bg.pivot = UIWidget.Pivot.Top;
-            bg.transform.localPosition = Vector3.zero;
-            bg.atlas = Resources.Load<UIAtlas> ("ui/ngui/StarfighterAtlas");
-            bg.spriteName = "fill_64x";
-            bg.width = 2;
-            bg.height = 288;
-            bg.depth = -1;
-            bg.color = Color.black;
-            bg.tilingScaleX = 1;
-            bg.name = "Background";
-
-            bg.gameObject.CopyParentLayer ();
-            scrollBar.backgroundWidget = bg;
-
-            BoxCollider bgCldr = bg.gameObject.AddComponent<BoxCollider> ();
-            bgCldr.center = new Vector3 (0, -144, 0);
-            bgCldr.size = new Vector3 (16, 288, 0);
-            bgCldr.isTrigger = true;
-            
-            UISprite fg = NGUITools.AddChild<UISprite> (scrollBar.gameObject);
-            fg.pivot = UIWidget.Pivot.Top;
-            fg.transform.localPosition = Vector3.zero;
-            fg.atlas = bg.atlas;
-            fg.spriteName = "fill_64x";
-            fg.type = UISprite.Type.Sliced;
-            fg.width = 14;
-            fg.height = 288;
-            fg.color = new Color (0.48f, 0.48f, 0.48f);
-            fg.tilingScaleX = 1;
-            fg.name = "Foreground";
-
-            fg.gameObject.CopyParentLayer ();
-            scrollBar.foregroundWidget = fg;
-
-            BoxCollider fgCldr = fg.gameObject.AddComponent<BoxCollider> ();
-            fgCldr.center = new Vector3 (0, -32, 0);
-            fgCldr.size = new Vector3 (14, 64, 0);
-            fgCldr.isTrigger = true;
-
-            UIButton fgBtn = fg.gameObject.AddComponent<UIButton> ();
-            fgBtn.tweenTarget = fg.gameObject;
-            fgBtn.hover = Color.white;
-            fgBtn.pressed = new Color (1, 0.67f, 0);
-            fgBtn.disabledColor = fg.color;
-            fgBtn.duration = 0.05f;
+            UIButton fgButton = scrollBar.gameObject.CreateButton (
+                "Foreground",
+                new ButtonSettings {
+                    Size = new Vector3 (14, 288, 0),
+                    Color = Color.gray,
+                    HoverColor = Color.white,
+                    PressedColor = new Color (1, 0.67f, 0),
+                    TweenDuration = 0.05f,
+                    UseSpriteAtlas = true
+                },
+                null,
+                UIWidget.Pivot.Top
+            );
+            fgButton.transform.localPosition = Vector3.zero;
+            scrollBar.foregroundWidget = fgButton.GetComponent<UISprite> ();
 
             return scrollBar;
         }
 
-        public static UIInput CreateInput (this GameObject root, string name, Color color, int fontSize, int width, int lineCount,
-                Font ttf = null, UIInput.KeyboardType kbType = UIInput.KeyboardType.Default) {
-            UILabel label = root.CreateLabel (
-                name,
-                "",
-                color,
-                fontSize,
-                width,
-                ttf ?? StockFonts.blender["Bold"],
-                UILabel.Effect.None
-            );
-            label.height = fontSize * lineCount;
-            label.maxLineCount = lineCount;
+        public class InputFieldSettings : LabelSettings {
+            public UIInput.KeyboardType KeyboardType { get; set; } = UIInput.KeyboardType.Default;
+            public Color BackgroundColor { get; set; } = new Color (0.0392f, 0.0392f, 0.0392f);
+        }
+
+        public static UIInput CreateInput (this GameObject root, string name, InputFieldSettings settings, UIWidget.Pivot pivot) {
+            UILabel label = root.CreateLabel (name, settings, pivot);
 
             BoxCollider box = label.gameObject.AddComponent<BoxCollider> ();
             box.isTrigger = true;
@@ -187,8 +232,17 @@ namespace Nebula.UI {
             audioTrigger.trigger = CUIMenuAudioTrigger.Trigger.OnClick;
 
             UIInput input = label.gameObject.AddComponent<UIInput> ();
-            input.keyboardType = kbType;
+            input.keyboardType = settings.KeyboardType;
             input.label = label;
+
+            _ = label.gameObject.CreateTextureBackground (
+                new TextureSettings {
+                    Size = new Vector3 (label.width, label.height),
+                    Color = settings.BackgroundColor
+                },
+                pivot
+            );
+
             return input;
         }
     }
