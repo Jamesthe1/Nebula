@@ -159,6 +159,7 @@ namespace Nebula.ModConfig.Toasts {
             }
 
             CUIButtonInput input;
+            // TODO: Add a "GetValueStringRaw" function that returns the stored value
             switch (newType) {
                 case ToastType.String:
                     inputField.gameObject.SetActive (true);
@@ -205,6 +206,8 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         private void ToastUpdate() {
+            // TODO: Disable lower buttons if controls are locked
+            // TODO: Have text input also lock controls on click
             if (Controls.lockAll && type == ToastType.KeyCode) {
                 CaptureInput ();
                 return;
@@ -222,8 +225,12 @@ namespace Nebula.ModConfig.Toasts {
             Event @event = Event.current;
             if (@event.type != EventType.KeyDown)
                 return;
+
+            KeyCode code = @event.keyCode;  // Unity sends None first, *then* the actual key. wtf?
+            if (code == KeyCode.None)
+                return;
             
-            keycodeLabel.text = @event.keyCode.ToString ().ToUpper ();
+            keycodeLabel.text = code.ToString ().ToUpper ();
             Controls.lockAll = false;
         }
 

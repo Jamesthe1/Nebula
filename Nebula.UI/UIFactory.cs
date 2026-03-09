@@ -20,11 +20,12 @@ namespace Nebula.UI {
             label.text = settings.Text;
             label.effectStyle = settings.Effect;
             label.color = settings.Color;
-
             label.height = settings.FontSize * settings.MaxLineCount;
             label.maxLineCount = settings.MaxLineCount;
             label.width = settings.Width;
             label.overflowMethod = UILabel.Overflow.ResizeFreely;
+            if (settings.MaxLineCount > 0)
+                label.overflowMethod = UILabel.Overflow.ResizeHeight;
             label.pivot = pivot;
             label.transform.localPosition = Vector3.zero;
             

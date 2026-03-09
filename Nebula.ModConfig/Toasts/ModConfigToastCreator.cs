@@ -127,7 +127,7 @@ namespace Nebula.ModConfig.Toasts {
                     Width = 656,
                     MaxLineCount = 3
                 },
-                UIWidget.Pivot.Top
+                UIWidget.Pivot.Center
             );
             input.transform.localPosition = new Vector3 (0, -16, 0);
             input.gameObject.SetActive (false);
@@ -136,11 +136,11 @@ namespace Nebula.ModConfig.Toasts {
             UIButton keycode = table.gameObject.CreateButton (
                 "BUTTON_KeyCode",
                 new UIFactory.ButtonSettings {
-                    Size = new Vector3 (656, 40),
+                    Size = new Vector3 (360, 40),
                     OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) }
                 },
                 new UIFactory.LabelSettings {
-                    Width = 656,
+                    Width = 360,
                     Effect = UILabel.Effect.None,
                     Text = "KEYCODE",
                     FontSize = 24
@@ -199,7 +199,8 @@ namespace Nebula.ModConfig.Toasts {
                 iVisual.ToString ("D3") + "_BUTTON",
                 new UIFactory.ButtonSettings {
                     Size = new Vector3 (360, 40, 0),
-                    OnClick = new List<EventDelegate> () { toast.callbackEvents[i] }
+                    OnClick = new List<EventDelegate> () { toast.callbackEvents[i] },
+                    Color = new Color (0.1176f, 0.1176f, 0.1176f)
                 },
                 new UIFactory.LabelSettings {
                     Width = 360,
