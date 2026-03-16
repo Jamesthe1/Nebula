@@ -6,3 +6,4 @@ export/icon.png
 .vscode
 .vs
 *.zip
+Directory.Build.props
