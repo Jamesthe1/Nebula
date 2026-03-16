@@ -129,7 +129,7 @@ namespace Nebula.ModConfig.Toasts {
                     FontSize = 24,
                     Width = 656,
                     Overflow = UILabel.Overflow.ClampContent,
-                    BackgroundColor = new Color (bgColor.r, bgColor.g, bgColor.b, 0.2f),
+                    BackgroundColor = new Color (bgColor.r, bgColor.g, bgColor.b),
                     StartsSelected = true
                 },
                 UIWidget.Pivot.Center

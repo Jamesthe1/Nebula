@@ -216,7 +216,7 @@ namespace Nebula.UI {
         public class InputFieldSettings : LabelSettings {
             public UIInput.KeyboardType KeyboardType { get; set; } = UIInput.KeyboardType.Default;
             public Color BackgroundColor { get; set; } = new Color (0.0392f, 0.0392f, 0.0392f);
-            public Color SelectColor { get; set; } = new Color (0.7686f, 0.1804f, 0f);
+            public Color SelectColor { get; set; } = new Color (0.7686f, 0.1804f, 0f, 0.2f);
             public bool StartsSelected { get; set; } = false;
         }
 
