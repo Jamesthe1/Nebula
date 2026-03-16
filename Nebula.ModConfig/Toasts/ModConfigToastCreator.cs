@@ -129,6 +129,8 @@ namespace Nebula.ModConfig.Toasts {
                 },
                 UIWidget.Pivot.Center
             );
+            input.onChange = new List<EventDelegate> () { new EventDelegate (toast.OnInputFieldClicked) };
+            input.onSubmit = new List<EventDelegate> () { new EventDelegate (toast.OnInputFieldSubmit) };
             input.transform.localPosition = new Vector3 (0, -16, 0);
             input.gameObject.SetActive (false);
             toast.inputField = input;
@@ -137,7 +139,8 @@ namespace Nebula.ModConfig.Toasts {
                 "BUTTON_KeyCode",
                 new UIFactory.ButtonSettings {
                     Size = new Vector3 (360, 40),
-                    OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) }
+                    OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) },
+                    Color = new Color (0.1176f, 0.1176f, 0.1176f)
                 },
                 new UIFactory.LabelSettings {
                     Width = 360,
@@ -200,7 +203,8 @@ namespace Nebula.ModConfig.Toasts {
                 new UIFactory.ButtonSettings {
                     Size = new Vector3 (360, 40, 0),
                     OnClick = new List<EventDelegate> () { toast.callbackEvents[i] },
-                    Color = new Color (0.1176f, 0.1176f, 0.1176f)
+                    Color = new Color (0.1176f, 0.1176f, 0.1176f),
+                    DisabledColor = Color.black
                 },
                 new UIFactory.LabelSettings {
                     Width = 360,

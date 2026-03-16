@@ -159,17 +159,14 @@ namespace Nebula.ModConfig.Toasts {
             }
 
             CUIButtonInput input;
-            // TODO: Add a "GetValueStringRaw" function that returns the stored value
             switch (newType) {
                 case ToastType.String:
                     inputField.gameObject.SetActive (true);
                     input = inputField.GetComponent<CUIButtonInput> ();
-                    inputField.value = ((CUIModConfigEntry<string>)_query.source).value;
                     break;
                 case ToastType.KeyCode:
                     keycodeButton.gameObject.SetActive (true);
                     input = keycodeButton.GetComponent<CUIButtonInput> ();
-                    keycodeLabel.text = _query.source.valueLabel.text;
                     break;
                 default:
                     throw new NotSupportedException ("New toast type not recognized");
@@ -185,6 +182,15 @@ namespace Nebula.ModConfig.Toasts {
         protected override void OnEnable () {
             state = State.InitialDelay;
             base.OnEnable();
+            switch (_type) {
+                case ToastType.String:
+                    inputField.value = _query.source.GetValueStringRaw ();
+                    inputField.label.SetDirty ();
+                    break;
+                case ToastType.KeyCode:
+                    keycodeLabel.text = _query.source.GetValueStringRaw ();
+                    break;
+            }
         }
 
         protected override void Update () {
@@ -200,16 +206,16 @@ namespace Nebula.ModConfig.Toasts {
                 case State.Outro:
                     break;
                 case State.Toast:
-                    ToastUpdate();
+                    ToastUpdate ();
                     break;
             }
         }
 
-        private void ToastUpdate() {
-            // TODO: Disable lower buttons if controls are locked
+        private void ToastUpdate () {
             // TODO: Have text input also lock controls on click
-            if (Controls.lockAll && type == ToastType.KeyCode) {
-                CaptureInput ();
+            if (Controls.lockAll) {
+                if (type == ToastType.KeyCode)
+                    CaptureInput ();
                 return;
             }
 
@@ -221,17 +227,23 @@ namespace Nebula.ModConfig.Toasts {
             }
         }
 
+        private void SetInputLock (bool lockAll) {
+            Controls.lockAll = true;
+            bottomButtons.ForEach (b => b.isEnabled = !lockAll);
+        }
+
         private void CaptureInput () {
             Event @event = Event.current;
-            if (@event.type != EventType.KeyDown)
+            if (!@event.isKey)              // Due to some bullshit with keydown not capturing some keys, we're listening to ALL keyboard events
                 return;
 
-            KeyCode code = @event.keyCode;  // Unity sends None first, *then* the actual key. wtf?
+            KeyCode code = @event.keyCode;
             if (code == KeyCode.None)
                 return;
             
             keycodeLabel.text = code.ToString ().ToUpper ();
-            Controls.lockAll = false;
+            keycodeLabel.SetDirty ();
+            SetInputLock (false);
         }
 
         /// <summary>
@@ -348,10 +360,19 @@ namespace Nebula.ModConfig.Toasts {
 
         private void ExitToQuerySubstate () {
             Game.Instance.menuSubstate = _query.menuSubstateOnExit;
+            Controls.lockAll = false;
         }
 
-        public void OnKeyCodeClicked() {
-            Controls.lockAll = true;
+        public void OnKeyCodeClicked () {
+            SetInputLock (true);
+        }
+
+        public void OnInputFieldClicked () {
+            SetInputLock (true);
+        }
+
+        public void OnInputFieldSubmit () {
+            SetInputLock (false);
         }
     }
 }

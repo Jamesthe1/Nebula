@@ -12,7 +12,7 @@ namespace Nebula.ModConfig.EntryTypes {
             ToggleValue ();
         }
 
-        protected override string GetValueStringUnformatted () {
+        protected override string GetValueStringUncolored () {
             return value ? "ON" : "OFF";
         }
     }

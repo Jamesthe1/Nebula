@@ -13,7 +13,11 @@ namespace Nebula.ModConfig.EntryTypes {
             CUIConfigValueToast.ActivateWithQuery(this, (MenuSubstate)CUIModConfigMenu.MODCONFIG_SUBSTATE);
         }
 
-        protected override string GetValueStringUnformatted () {
+        public override string GetValueStringRaw () {
+            return value;
+        }
+
+        protected override string GetValueStringUncolored () {
             // Adds elipses to the string if it's too long
             if (value.Length <= DISPLAY_LENGTH_MAX)
                 return value;

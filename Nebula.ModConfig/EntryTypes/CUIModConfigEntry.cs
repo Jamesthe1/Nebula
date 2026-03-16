@@ -32,8 +32,8 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         protected override void OnEnable () {
-            value = dataTyped.Value;
-            dirty = false;
+            if (!dirty)
+                value = dataTyped.Value;
             RefreshButton ();
         }
 
@@ -61,12 +61,16 @@ namespace Nebula.ModConfig.EntryTypes {
             RefreshButton (true);
         }
 
-        protected virtual string GetValueStringUnformatted () {
+        public override string GetValueStringRaw () {
             return value.ToString ().ToUpper ();
         }
 
+        protected virtual string GetValueStringUncolored () {
+            return GetValueStringRaw ();
+        }
+
         protected override string GetValueString () {
-            return string.Format ("[{0}]{1}", GetOptionColorMarkup (), GetValueStringUnformatted ());
+            return string.Format ("[{0}]{1}", GetOptionColorMarkup (), GetValueStringUncolored ());
         }
 
         public override string GetConfigString () {
