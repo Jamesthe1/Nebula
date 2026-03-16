@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nebula.ModConfig.EntryTypes;
 using UnityEngine;
 
@@ -46,27 +47,22 @@ namespace Nebula.ModConfig {
 
         public List<UITable> optionsTables;
 
+        public List<CUIModConfigEntryBase> entries;
+
         public GameObject optionsRoot;
 
-        // Underscores and the "m" prefix auto-hide in inspector, not the fact that they are private
         private string _activeGuid = "";
-
-        private static bool _optionsAreDirty;
         
-        // TODO: Implement a State enum for all menus (Normal, SetKeybind, SetString) and add related functions
-        public static bool optionsAreDirty {
-            get => _optionsAreDirty;
-            set {
-                if (value != _optionsAreDirty) {
-                    _optionsAreDirty = value;
-                    Messenger<bool>.Broadcast ("OnOptionsAreDirtyChanged", _optionsAreDirty);
-                }
+        public bool optionsAreDirty {
+            get {
+                foreach (var entry in entries)
+                    if (entry.dirty)
+                        return true;
+                return false;
             }
         }
 
         protected override void OnEnable () {
-            optionsAreDirty = false;
-
             CUIButtonInput[] buttons = buttonTable.GetComponentsInChildren<CUIButtonInput> ();
             CUIButtonInput prevButton = buttons[buttons.Length - 1];    // Placing last as previous for wrap-around
             foreach (var button in buttons) {
@@ -220,13 +216,10 @@ namespace Nebula.ModConfig {
         }
 
         private void CacheAllSettings () {
-            foreach (UITable table in optionsTables) {
-                foreach (var button in table.GetComponentsInChildren<CUIModConfigEntryBase> ()) {
-                    if (button.dirty)
-                        button.CacheValues ();
-                }
+            foreach (var entry in entries) {
+                if (entry.dirty)
+                    entry.CacheValues ();
             }
-            optionsAreDirty = false;
         }
 
         private void ReturnToLastMenu () {

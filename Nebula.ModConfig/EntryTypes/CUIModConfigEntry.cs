@@ -8,7 +8,7 @@ namespace Nebula.ModConfig.EntryTypes {
             set => data = value;
         }
 
-        private T _value;
+        protected T _value; // Exposing to inheriting classes in case they wish to bypass dirty
 
         public T value {
             get => _value;
@@ -33,7 +33,7 @@ namespace Nebula.ModConfig.EntryTypes {
 
         protected override void OnEnable () {
             if (!dirty)
-                value = dataTyped.Value;
+                _value = dataTyped.Value;   // Bypass dirty set by using field
             RefreshButton ();
         }
 
@@ -45,19 +45,16 @@ namespace Nebula.ModConfig.EntryTypes {
                 AdjustValueBackward ();
             else
                 AdjustValueForward ();
-            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton ();
         }
 
         protected override void OnButtonRight () {
             AdjustValueForward ();
-            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton (true);
         }
 
         protected override void OnButtonLeft () {
             AdjustValueBackward ();
-            CUIModConfigMenu.optionsAreDirty = true;
             RefreshButton (true);
         }
 

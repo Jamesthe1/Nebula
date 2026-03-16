@@ -7,10 +7,12 @@ namespace Nebula.ModConfig.EntryTypes {
     public class CUIModConfigEnumGenericEntry : CUIModConfigCycleEntry<object> {
         protected override void CacheCurrentValue () {
             data.BoxedValue = value;
+            dirty = false;
         }
 
         protected override void OnEnable () {
-            value = data.BoxedValue;
+            if (!dirty)
+                _value = data.BoxedValue;
             RefreshButton ();
         }
 

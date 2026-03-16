@@ -213,9 +213,13 @@ namespace Nebula.ModConfig.Toasts {
             if (Controls.lockAll) {
                 if (type == ToastType.KeyCode)
                     CaptureInput ();
+                if (type == ToastType.String && !inputField.isSelected) // Just in case the user cancels selection
+                    SetInputLock (false);
                 return;
             }
             
+            // TODO: Resolve bug where input lock does not happen when the element is re-selected
+            // You could disable the UIInput component, but that's kinda cheap
             if (inputField.isSelected) {
                 SetInputLock (true);    // We only want this set once, which is why it's below
                 return;

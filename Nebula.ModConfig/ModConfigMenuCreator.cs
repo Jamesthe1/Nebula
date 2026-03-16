@@ -41,6 +41,7 @@ namespace Nebula.ModConfig {
             cfgMenu.minSpringTargetY = 1;
             cfgMenu.maxSpringTargetY = 308;
             cfgMenu.optionsTables = new List<UITable> ();
+            cfgMenu.entries = new List<CUIModConfigEntryBase> ();
             cfgMenu.menuSubstateOnCancel = MenuSubstate.Options;
             cfgMenu.name = "ROOT_ModConfig";
             
@@ -269,12 +270,12 @@ namespace Nebula.ModConfig {
                 table.gameObject.SetActive (false);
                 cfgMenu.optionsTables.Add (table);
 
-                CreateConfigMenuOptionList (plugin, table.gameObject);
+                CreateConfigMenuOptionList (plugin, table.gameObject, cfgMenu);
                 table.enabled = true;
             }
         }
 
-        private static void CreateConfigMenuOptionList (BaseUnityPlugin plugin, GameObject parent) {
+        private static void CreateConfigMenuOptionList (BaseUnityPlugin plugin, GameObject parent, CUIModConfigMenu cfgMenu) {
             SortedDictionary<string, List<ConfigEntryBase>> cfgSort = new SortedDictionary<string, List<ConfigEntryBase>> ();
             foreach (var cfgEntry in plugin.Config) {
                 string section = cfgEntry.Key.Section;
@@ -302,6 +303,7 @@ namespace Nebula.ModConfig {
 
                     CUIModConfigEntryBase cfgComp = button.GetComponent<CUIModConfigEntryBase> ();
                     cfgComp.SetupFromType (valueType);
+                    cfgMenu.entries.Add (cfgComp);
                         
                     if (i == 1)
                         button.GetComponent<CUIButtonInput> ().startsSelected = true;
