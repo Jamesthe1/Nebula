@@ -125,11 +125,12 @@ namespace Nebula.ModConfig.Toasts {
                 "INPUT_Text",
                 new UIFactory.InputFieldSettings {
                     Font = StockFonts.blender["Bold"],
-                    Text = "Input text",
+                    Text = "Place text here",
                     FontSize = 24,
                     Width = 656,
                     Overflow = UILabel.Overflow.ClampContent,
-                    BackgroundColor = bgColor
+                    BackgroundColor = new Color (bgColor.r, bgColor.g, bgColor.b, 0.2f),
+                    StartsSelected = true
                 },
                 UIWidget.Pivot.Center
             );
@@ -143,7 +144,8 @@ namespace Nebula.ModConfig.Toasts {
                 new UIFactory.ButtonSettings {
                     Size = new Vector3 (360, 40),
                     OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) },
-                    Color = bgColor
+                    Color = bgColor,
+                    StartsSelected = true
                 },
                 new UIFactory.LabelSettings {
                     Width = 360,

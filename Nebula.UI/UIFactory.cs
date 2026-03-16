@@ -95,6 +95,7 @@ namespace Nebula.UI {
             public Color DisabledColor { get; set; } = Color.gray;
             public List<EventDelegate> OnClick { get; set; } = new List<EventDelegate> ();
             public bool UseSpriteAtlas { get; set; } = false;
+            public bool StartsSelected { get; set; } = false;
         }
 
         public static UIButton CreateButton (this GameObject root, string name, ButtonSettings settings, LabelSettings labelSettings, UIWidget.Pivot pivot) {
@@ -116,6 +117,7 @@ namespace Nebula.UI {
             CUIButtonInput buttonInput = buttonObj.AddComponent<CUIButtonInput> ();
             buttonInput.inputType = CUIButtonInput.InputType.Menu;
             buttonInput.sendsOnClickOnConfirm = true;
+            buttonInput.startsSelected = settings.StartsSelected;
 
             CUIMenuAudioTrigger audioTrigger = buttonObj.AddComponent<CUIMenuAudioTrigger> ();
             audioTrigger.clipType = CUIMenuAudioTrigger.AudioClipType.Confirm;
@@ -215,6 +217,7 @@ namespace Nebula.UI {
             public UIInput.KeyboardType KeyboardType { get; set; } = UIInput.KeyboardType.Default;
             public Color BackgroundColor { get; set; } = new Color (0.0392f, 0.0392f, 0.0392f);
             public Color SelectColor { get; set; } = new Color (0.7686f, 0.1804f, 0f);
+            public bool StartsSelected { get; set; } = false;
         }
 
         public static UIInput CreateInput (this GameObject root, string name, InputFieldSettings settings, UIWidget.Pivot pivot) {
@@ -227,6 +230,7 @@ namespace Nebula.UI {
             CUIButtonInput buttonInput = label.gameObject.AddComponent<CUIButtonInput> ();
             buttonInput.inputType = CUIButtonInput.InputType.Menu;
             buttonInput.sendsOnClickOnConfirm = true;
+            buttonInput.startsSelected = settings.StartsSelected;
             buttonInput.enabled = false;
 
             CUIMenuAudioTrigger audioTrigger = label.gameObject.AddComponent<CUIMenuAudioTrigger> ();
