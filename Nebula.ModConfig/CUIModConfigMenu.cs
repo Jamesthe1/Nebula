@@ -60,6 +60,9 @@ namespace Nebula.ModConfig {
                         return true;
                 return false;
             }
+            set {
+                entries.ForEach (e => e.dirty = value);
+            }
         }
 
         protected override void OnEnable () {
@@ -247,7 +250,8 @@ namespace Nebula.ModConfig {
         }
 
         public void OnDiscardConfigsClicked () {
-            ReturnToLastMenu ();    // The value stored will be reset the next time our menu is enabled again
+            optionsAreDirty = false;
+            ReturnToLastMenu ();
         }
     }
 }
