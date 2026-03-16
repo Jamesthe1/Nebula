@@ -25,6 +25,8 @@ namespace Nebula.ModConfig.EntryTypes {
 
         public abstract string GetValueStringRaw ();
 
+        public abstract string GetValueStringUncolored ();
+
         public virtual void SetupFromType (Type type) {
             // Intentionally left empty, this is only for inheriting classes if they need additional setup
         }

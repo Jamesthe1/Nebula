@@ -62,11 +62,11 @@ namespace Nebula.ModConfig.EntryTypes {
         }
 
         public override string GetValueStringRaw () {
-            return value.ToString ().ToUpper ();
+            return value.ToString ();
         }
 
-        protected virtual string GetValueStringUncolored () {
-            return GetValueStringRaw ();
+        public override string GetValueStringUncolored () {
+            return GetValueStringRaw ().ToUpper ();
         }
 
         protected override string GetValueString () {

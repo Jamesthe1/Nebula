@@ -47,6 +47,7 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         public enum ToastType {
+            None,
             String,
             KeyCode
         }
@@ -96,6 +97,8 @@ namespace Nebula.ModConfig.Toasts {
         public List<UITweener> transitionOutTweens = new List<UITweener>();
 
         private float _delayRemaining = 1f;
+
+        private KeyCode keyCode;
 
         private EventDelegate _callback;
 
@@ -158,15 +161,19 @@ namespace Nebula.ModConfig.Toasts {
                     break;
             }
 
-            CUIButtonInput input;
+            CUIButtonInput input = null;
             switch (newType) {
                 case ToastType.String:
+                    inputField.value = _query.source.GetValueStringRaw ();
                     inputField.gameObject.SetActive (true);
                     input = inputField.GetComponent<CUIButtonInput> ();
                     break;
                 case ToastType.KeyCode:
+                    keycodeLabel.text = _query.source.GetValueStringUncolored ();
                     keycodeButton.gameObject.SetActive (true);
                     input = keycodeButton.GetComponent<CUIButtonInput> ();
+                    break;
+                case ToastType.None:
                     break;
                 default:
                     throw new NotSupportedException ("New toast type not recognized");
@@ -182,15 +189,6 @@ namespace Nebula.ModConfig.Toasts {
         protected override void OnEnable () {
             state = State.InitialDelay;
             base.OnEnable();
-            switch (_type) {
-                case ToastType.String:
-                    inputField.value = _query.source.GetValueStringRaw ();
-                    inputField.label.SetDirty ();
-                    break;
-                case ToastType.KeyCode:
-                    keycodeLabel.text = _query.source.GetValueStringRaw ();
-                    break;
-            }
         }
 
         protected override void Update () {
@@ -212,16 +210,20 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         private void ToastUpdate () {
-            // TODO: Have text input also lock controls on click
             if (Controls.lockAll) {
                 if (type == ToastType.KeyCode)
                     CaptureInput ();
                 return;
             }
+            
+            if (inputField.isSelected) {
+                SetInputLock (true);    // We only want this set once, which is why it's below
+                return;
+            }
 
             bool menuCancel = Controls.player.GetButtonDown ("Menu Cancel") || Input.GetKeyDown (KeyCode.Escape);
             bool mouseNotCaptured = !Controls.Instance.isUsingKeyboardMouse || UICamera.hoveredObject == null;
-            if (!Controls.lockAll && menuCancel && mouseNotCaptured) {
+            if (menuCancel && mouseNotCaptured) {
                 AudioMenu.playCancel = true;
                 OnDiscardImmediate ();
             }
@@ -229,7 +231,7 @@ namespace Nebula.ModConfig.Toasts {
 
         private void SetInputLock (bool lockAll) {
             Controls.lockAll = true;
-            bottomButtons.ForEach (b => b.isEnabled = !lockAll);
+            bottomButtons.ForEach (b => b.gameObject.SetActive (!lockAll)); // Not using disabled color as they still capture input for some reason
         }
 
         private void CaptureInput () {
@@ -241,6 +243,7 @@ namespace Nebula.ModConfig.Toasts {
             if (code == KeyCode.None)
                 return;
             
+            keyCode = code;
             keycodeLabel.text = code.ToString ().ToUpper ();
             keycodeLabel.SetDirty ();
             SetInputLock (false);
@@ -347,7 +350,7 @@ namespace Nebula.ModConfig.Toasts {
                     break;
                 case ToastType.KeyCode:
                     var keyEntry = (CUIModConfigEntry<KeyCode>)_query.source;
-                    keyEntry.value = (KeyCode)Enum.Parse(typeof(KeyCode), keycodeLabel.text);
+                    keyEntry.value = keyCode;
                     break;
             }
 
@@ -361,18 +364,16 @@ namespace Nebula.ModConfig.Toasts {
         private void ExitToQuerySubstate () {
             Game.Instance.menuSubstate = _query.menuSubstateOnExit;
             Controls.lockAll = false;
+            type = ToastType.None;
         }
 
         public void OnKeyCodeClicked () {
             SetInputLock (true);
         }
 
-        public void OnInputFieldClicked () {
-            SetInputLock (true);
-        }
-
         public void OnInputFieldSubmit () {
             SetInputLock (false);
+            UICamera.selectedObject = bottomButtons[0].gameObject;
         }
     }
 }
