@@ -11,7 +11,8 @@ namespace Nebula.UI {
             public int Width { get; set; }
             public Font Font { get; set; } = StockFonts.microgramma["BoldDynamic"];
             public UILabel.Effect Effect { get; set; } = UILabel.Effect.Shadow;
-            public int MaxLineCount { get; set; } = 0;
+            public int MaxLineCount { get; set; } = 1;
+            public UILabel.Overflow Overflow { get; set; } = UILabel.Overflow.ResizeFreely;
         }
 
         public static UILabel CreateLabel (this GameObject root, string name, LabelSettings settings, UIWidget.Pivot pivot) {
@@ -23,9 +24,7 @@ namespace Nebula.UI {
             label.height = settings.FontSize * settings.MaxLineCount;
             label.maxLineCount = settings.MaxLineCount;
             label.width = settings.Width;
-            label.overflowMethod = UILabel.Overflow.ResizeFreely;
-            if (settings.MaxLineCount > 0)
-                label.overflowMethod = UILabel.Overflow.ResizeHeight;
+            label.overflowMethod = settings.Overflow;
             label.pivot = pivot;
             label.transform.localPosition = Vector3.zero;
             
@@ -215,6 +214,7 @@ namespace Nebula.UI {
         public class InputFieldSettings : LabelSettings {
             public UIInput.KeyboardType KeyboardType { get; set; } = UIInput.KeyboardType.Default;
             public Color BackgroundColor { get; set; } = new Color (0.0392f, 0.0392f, 0.0392f);
+            public Color SelectColor { get; set; } = new Color (0.7686f, 0.1804f, 0f);
         }
 
         public static UIInput CreateInput (this GameObject root, string name, InputFieldSettings settings, UIWidget.Pivot pivot) {
@@ -227,6 +227,7 @@ namespace Nebula.UI {
             CUIButtonInput buttonInput = label.gameObject.AddComponent<CUIButtonInput> ();
             buttonInput.inputType = CUIButtonInput.InputType.Menu;
             buttonInput.sendsOnClickOnConfirm = true;
+            buttonInput.enabled = false;
 
             CUIMenuAudioTrigger audioTrigger = label.gameObject.AddComponent<CUIMenuAudioTrigger> ();
             audioTrigger.clipType = CUIMenuAudioTrigger.AudioClipType.ToggleOption;
@@ -235,8 +236,11 @@ namespace Nebula.UI {
             UIInput input = label.gameObject.AddComponent<UIInput> ();
             input.keyboardType = settings.KeyboardType;
             input.label = label;
+            input.selectionColor = settings.SelectColor;
+            input.caretColor = settings.Color;
 
-            _ = label.gameObject.CreateTextureBackground (
+            // TODO: Resolve bug with moving background when selection moves
+            UITexture background = label.gameObject.CreateTextureBackground (
                 new TextureSettings {
                     Size = new Vector3 (label.width, label.height),
                     Color = settings.BackgroundColor

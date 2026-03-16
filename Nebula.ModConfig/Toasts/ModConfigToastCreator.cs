@@ -119,17 +119,20 @@ namespace Nebula.ModConfig.Toasts {
         }
 
         private static void CreateInputHandlers (CUIConfigValueToast toast, UITable table) {
+            Color bgColor = new Color (0.25f, 0.25f, 0.25f);
+
             UIInput input = table.gameObject.CreateInput (
                 "INPUT_Text",
                 new UIFactory.InputFieldSettings {
                     Font = StockFonts.blender["Bold"],
+                    Text = "Input text",
                     FontSize = 24,
                     Width = 656,
-                    MaxLineCount = 3
+                    Overflow = UILabel.Overflow.ClampContent,
+                    BackgroundColor = bgColor
                 },
                 UIWidget.Pivot.Center
             );
-            input.onChange = new List<EventDelegate> () { new EventDelegate (toast.OnInputFieldClicked) };
             input.onSubmit = new List<EventDelegate> () { new EventDelegate (toast.OnInputFieldSubmit) };
             input.transform.localPosition = new Vector3 (0, -16, 0);
             input.gameObject.SetActive (false);
@@ -140,7 +143,7 @@ namespace Nebula.ModConfig.Toasts {
                 new UIFactory.ButtonSettings {
                     Size = new Vector3 (360, 40),
                     OnClick = new List<EventDelegate> () { new EventDelegate (toast.OnKeyCodeClicked) },
-                    Color = new Color (0.1176f, 0.1176f, 0.1176f)
+                    Color = bgColor
                 },
                 new UIFactory.LabelSettings {
                     Width = 360,
