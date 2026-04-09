@@ -164,7 +164,9 @@ namespace Nebula.ModConfig.Toasts {
             CUIButtonInput input = null;
             switch (newType) {
                 case ToastType.String:
-                    inputField.value = _query.source.GetValueStringRaw ();
+                    string data = _query.source.GetValueStringRaw ();
+                    inputField.label.maxLineCount = data.GetLineCount ();
+                    inputField.value = data;
                     inputField.gameObject.SetActive (true);
                     input = inputField.GetComponent<CUIButtonInput> ();
                     break;
@@ -188,8 +190,8 @@ namespace Nebula.ModConfig.Toasts {
 
         protected override void OnEnable () {
             state = State.InitialDelay;
-            inputField.enabled = true;  // Force enable on awake
-            base.OnEnable();
+            inputField.enabled = true;  // Force enable on awake because it could be disabled previously
+            base.OnEnable ();
         }
 
         protected override void Update () {

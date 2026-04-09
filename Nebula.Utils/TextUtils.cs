@@ -12,5 +12,9 @@ namespace Nebula.Utils {
                 title = title.ToUpper ();
             return title;
         }
+
+        public static int GetLineCount (this string multilineStr) {
+            return multilineStr.Split ('\n').Length;    // Also includes first line
+        }
     }
 }
