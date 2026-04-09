@@ -46,6 +46,7 @@ namespace Nebula.UI {
             child.mainTexture = texture;
             child.color = settings.Color;
             child.pivot = pivot;
+            child.transform.localPosition = settings.Size.GetOffset (pivot);
             child.shader = Shader.Find ("Unlit/Transparent Colored");
 
             child.width = (int)settings.Size.x;
@@ -243,7 +244,6 @@ namespace Nebula.UI {
             input.selectionColor = settings.SelectColor;
             input.caretColor = settings.Color;
 
-            // TODO: Resolve bug with moving background when selection moves
             UITexture background = label.gameObject.CreateTextureBackground (
                 new TextureSettings {
                     Size = new Vector3 (label.width, label.height),
@@ -251,6 +251,10 @@ namespace Nebula.UI {
                 },
                 pivot
             );
+
+            CUIInputField inputField = input.gameObject.AddComponent<CUIInputField> ();
+            inputField.input = input;
+            inputField.background = background;
 
             return input;
         }

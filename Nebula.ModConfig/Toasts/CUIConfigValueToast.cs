@@ -188,6 +188,7 @@ namespace Nebula.ModConfig.Toasts {
 
         protected override void OnEnable () {
             state = State.InitialDelay;
+            inputField.enabled = true;  // Force enable on awake
             base.OnEnable();
         }
 
@@ -218,8 +219,6 @@ namespace Nebula.ModConfig.Toasts {
                 return;
             }
             
-            // TODO: Resolve bug where input lock does not happen when the element is re-selected
-            // You could disable the UIInput component, but that's kinda cheap
             if (inputField.isSelected) {
                 SetInputLock (true);    // We only want this set once, which is why it's below
                 return;
@@ -235,6 +234,8 @@ namespace Nebula.ModConfig.Toasts {
 
         private void SetInputLock (bool lockAll) {
             Controls.lockAll = true;
+            if (type == ToastType.String)
+                inputField.enabled = lockAll;   // This prevents editing when the bottom buttons are made active
             bottomButtons.ForEach (b => b.gameObject.SetActive (!lockAll)); // Not using disabled color as they still capture input for some reason
         }
 
